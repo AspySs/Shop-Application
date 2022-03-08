@@ -20,6 +20,10 @@ public class Conn {
     // --------Создание таблицы--------
     public static void createDB() throws SQLException
     {
+        if(conn == null){
+            System.out.println("Не найдено соединение с БД");
+            return;
+        }
         statmt = conn.createStatement();
         if(statmt.executeQuery("PRAGMA foreign_keys;").getInt(1) == 0){
             statmt.execute("PRAGMA foreign_keys = ON;");
@@ -34,6 +38,13 @@ public class Conn {
     // --------Заполнение таблицы--------
     public static void writeDB() throws SQLException
     {
+        if(conn == null){
+            System.out.println("Не найдено соединение с БД");
+            return;
+        }
+        if(statmt == null){
+            statmt = conn.createStatement();
+        }
         long timestamp = new Timestamp(System.currentTimeMillis()).getTime();
         statmt.execute("INSERT INTO 'warehouses' ('name', 'amount', 'quantity') VALUES ('mouse1', 1000, 5); ");
         statmt.execute("INSERT INTO 'warehouses' ('name', 'amount', 'quantity') VALUES ('mic1', 250, 5); ");
@@ -48,6 +59,13 @@ public class Conn {
     // -------- Вывод таблицы--------
     public static void readDB() throws SQLException
     {
+        if(conn == null){
+            System.out.println("Не найдено соединение с БД");
+            return;
+        }
+        if(statmt == null){
+            statmt = conn.createStatement();
+        }
         resSet = statmt.executeQuery("SELECT * FROM warehouses");
 
         while(resSet.next())
