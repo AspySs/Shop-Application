@@ -3,15 +3,14 @@ import org.sqlite.JDBC;
 import java.sql.*;
 
 
-public class conn {
-    public static Connection conn;
+public class Conn {
+    public static Connection conn = null;
     public static Statement statmt;
     public static ResultSet resSet;
 
     // --------ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ--------
-    public static void Conn() throws ClassNotFoundException, SQLException
+    public static void conn() throws ClassNotFoundException, SQLException
     {
-        conn = null;
         Class.forName("org.sqlite.JDBC");
         conn = DriverManager.getConnection("jdbc:sqlite:shop.sqlite");
 
@@ -19,7 +18,7 @@ public class conn {
     }
 
     // --------Создание таблицы--------
-    public static void CreateDB() throws SQLException
+    public static void createDB() throws SQLException
     {
         statmt = conn.createStatement();
         if(statmt.executeQuery("PRAGMA foreign_keys;").getInt(1) == 0){
@@ -33,7 +32,7 @@ public class conn {
     }
 
     // --------Заполнение таблицы--------
-    public static void WriteDB() throws SQLException
+    public static void writeDB() throws SQLException
     {
         long timestamp = new Timestamp(System.currentTimeMillis()).getTime();
         statmt.execute("INSERT INTO 'warehouses' ('name', 'amount', 'quantity') VALUES ('mouse1', 1000, 5); ");
@@ -47,7 +46,7 @@ public class conn {
     }
 
     // -------- Вывод таблицы--------
-    public static void ReadDB() throws SQLException
+    public static void readDB() throws SQLException
     {
         resSet = statmt.executeQuery("SELECT * FROM warehouses");
 
@@ -68,13 +67,22 @@ public class conn {
     }
 
     // --------Закрытие--------
-    public static void CloseDB() throws ClassNotFoundException, SQLException
+    public static void closeDB() throws ClassNotFoundException, SQLException
     {
-        conn.close();
-        statmt.close();
-        resSet.close();
-
-        System.out.println("Соединения закрыты");
+        if((conn == null)&&(statmt == null)&&(resSet == null)) {
+            System.out.println("Не найдено открытых соединений!");
+        } else {
+            if (conn != null) {
+                conn.close();
+            }
+            if (statmt != null) {
+                statmt.close();
+            }
+            if (resSet != null) {
+                resSet.close();
+            }
+            System.out.println("Все соединения закрыты!");
+        }
     }
 
 }
