@@ -100,6 +100,7 @@ public class Conn {
     }
 
     // --------Закрытие--------
+/*
     public static void closeDB() throws SQLException
     {
         if((conn == null)&&(statmt == null)&&(resSet == null)) {
@@ -117,5 +118,6 @@ public class Conn {
             System.out.println("Все соединения закрыты!");
         }
     }
+*/
 
 }

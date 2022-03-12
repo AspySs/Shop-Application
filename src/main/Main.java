@@ -9,7 +9,6 @@ public class Main {
             Conn.getInstance();
             Conn.writeDB();
             Conn.readDB();
-            Conn.closeDB();
         } catch (SQLException e) {
             e.printStackTrace();
         }
