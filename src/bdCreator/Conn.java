@@ -1,24 +1,39 @@
 package bdCreator;
-import org.sqlite.JDBC;
 import java.sql.*;
-
 
 public class Conn {
     public static Connection conn = null;
-    public static Statement statmt;
-    public static ResultSet resSet;
+    public static Statement statmt = null;
+    public static ResultSet resSet = null;
+    private static Conn instance = null;
 
+    private Conn(){
+        try {
+            conn();
+            createDB();
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void getInstance(){
+        if(instance == null){
+            instance = new Conn();
+        }
+    }
     // --------ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ--------
-    public static void conn() throws ClassNotFoundException, SQLException
+    private static void conn() throws ClassNotFoundException, SQLException
     {
-        Class.forName("org.sqlite.JDBC");
-        conn = DriverManager.getConnection("jdbc:sqlite:shop.sqlite");
-
-        System.out.println("База Подключена!");
+        if(conn == null) {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:shop.sqlite");
+            System.out.println("База Подключена!");
+        }else {
+            System.out.println("База уже подключена!");
+        }
     }
 
     // --------Создание таблицы--------
-    public static void createDB() throws SQLException
+    private static void createDB() throws SQLException
     {
         if(conn == null){
             System.out.println("Не найдено соединение с БД");
@@ -85,7 +100,7 @@ public class Conn {
     }
 
     // --------Закрытие--------
-    public static void closeDB() throws ClassNotFoundException, SQLException
+    public static void closeDB() throws SQLException
     {
         if((conn == null)&&(statmt == null)&&(resSet == null)) {
             System.out.println("Не найдено открытых соединений!");
