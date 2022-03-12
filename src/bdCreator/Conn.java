@@ -15,10 +15,11 @@ public class Conn {
             e.printStackTrace();
         }
     }
-    public static void getInstance(){
+    public static Conn getInstance(){
         if(instance == null){
             instance = new Conn();
         }
+        return instance;
     }
     // --------ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ--------
     private static void conn() throws ClassNotFoundException, SQLException
