@@ -2,39 +2,33 @@ package bdCreator;
 import java.sql.*;
 
 public class Conn {
-    public static Connection conn = null;
     public static Statement statmt = null;
     public static ResultSet resSet = null;
     private static Conn instance = null;
 
-    private Conn(){
+    private Conn(Connection con){
         try {
-            conn();
-            createDB();
-        } catch (ClassNotFoundException | SQLException e) {
+            createDB(con);
+        } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
-    public static Conn getInstance(){
+    public static Conn getInstance(Connection con){
         if(instance == null){
-            instance = new Conn();
+            instance = new Conn(con);
         }
         return instance;
     }
     // --------ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ--------
-    private static void conn() throws ClassNotFoundException, SQLException
+    public static Connection conn() throws ClassNotFoundException, SQLException
     {
-        if(conn == null) {
-            Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:shop.sqlite");
-            System.out.println("База Подключена!");
-        }else {
-            System.out.println("База уже подключена!");
-        }
+        Class.forName("org.sqlite.JDBC");
+        return DriverManager.getConnection("jdbc:sqlite:shop.sqlite");
     }
 
     // --------Создание таблицы--------
-    private static void createDB() throws SQLException
+    private static void createDB(Connection conn) throws SQLException
     {
         if(conn == null){
             System.out.println("Не найдено соединение с БД");
@@ -52,7 +46,7 @@ public class Conn {
     }
 
     // --------Заполнение таблицы--------
-    public static void writeDB() throws SQLException
+    public static void writeDB(Connection conn) throws SQLException
     {
         if(conn == null){
             System.out.println("Не найдено соединение с БД");
@@ -73,7 +67,7 @@ public class Conn {
     }
 
     // -------- Вывод таблицы--------
-    public static void readDB() throws SQLException
+    public static void readDB(Connection conn) throws SQLException
     {
         if(conn == null){
             System.out.println("Не найдено соединение с БД");
