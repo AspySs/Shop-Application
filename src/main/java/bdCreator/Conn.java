@@ -94,6 +94,53 @@ public class Conn {
         System.out.println("Таблица выведена");
     }
 
+    public static void printTable(Connection conn, String tableName){
+        String sql = "SELECT * FROM "+tableName;
+        try (PreparedStatement statement = conn.prepareStatement(sql)){
+            ResultSet result = statement.executeQuery();
+            System.out.println("------------------"+tableName+"----------------------");
+            while (result.next()){
+                switch (tableName){
+                    case "sales":
+                        System.out.println( "ID = " + result.getInt("id") );
+                        System.out.println( "amount = " + result.getInt("amount") );
+                        System.out.println( "quantity = " + result.getInt("quantity") );
+                        System.out.println( "sale_date = " + result.getTimestamp("sale_date") );
+                        System.out.println( "warehouse_id = " + result.getInt("warehouse_id") );
+                        System.out.println("----------------------------------------------------");
+                        break;
+                    case "warehouses":
+                        System.out.println( "ID = " + result.getInt("id") );
+                        System.out.println( "name = " + result.getString("name") );
+                        System.out.println( "quantity = " + result.getInt("quantity") );
+                        System.out.println( "amount = " + result.getInt("amount") );
+                        System.out.println("----------------------------------------------------");
+                        break;
+                    case "charges":
+                        System.out.println( "ID = " + result.getInt("id") );
+                        System.out.println( "amount = " + result.getInt("amount") );
+                        System.out.println( "charge_date = " + result.getInt("charge_date") );
+                        System.out.println( "expense_item_id = " + result.getInt("warehouse_id") );
+                        System.out.println("----------------------------------------------------");
+                        break;
+                    case "expense_items":
+                        System.out.println( "ID = " + result.getInt("id") );
+                        System.out.println( "name = " + result.getString("name") );
+                        System.out.println("----------------------------------------------------");
+                        break;
+                    default:
+                        System.out.println("Error invalid table_name ?");
+                }
+            }
+        } catch (SQLException throwables) {
+            //throwables.printStackTrace();
+            System.out.println("Invalid table name");
+        }
+    }
+
+    public static boolean addToTable(Connection conn, String tableName){
+        return true;
+    }
     // --------Закрытие--------
 /*
     public static void closeDB() throws SQLException
