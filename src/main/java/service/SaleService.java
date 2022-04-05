@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import repository.SaleRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -34,10 +35,6 @@ public class SaleService {
         return repository.findAll();
     }
 
-    public List<Sale> findByName(String name){
-        return repository.findSoldItemsByName(name);
-    }
-
     public List<Sale> findByWarehouseId(Integer id){
         return repository.findSalesByWarehouseId(id);
     }
@@ -48,6 +45,10 @@ public class SaleService {
 
     public long countInTime(LocalDate saleDateStart, LocalDate saleDateEnd){
         return repository.countSoldItemsInTime(saleDateStart, saleDateEnd);
+    }
+
+    public List<Sale> findSalesWithGreaterAmountWarehouse(BigDecimal amount){
+        return repository.findSalesWhereWarehouseAmountGreater(amount);
     }
 
 }
