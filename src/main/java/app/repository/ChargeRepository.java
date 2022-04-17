@@ -1,6 +1,7 @@
-package repository;
+package app.repository;
 
-import entity.Charge;
+import app.entity.Charge;
+import app.entity.ExpenseItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChargeRepository extends JpaRepository<Charge, Integer> {
+    @Query("select c from Charge c where c.expanseItem.id = ?1")
+    Optional<ExpenseItem> findExItemById(Integer id);
+    @Query("select (count(c) > 0) from Charge c where c.expanseItem.name = ?1")
+    boolean isExpItemNameExists(String name);
+    @Query("select (count(c) > 0) from Charge c where c.expanseItem.id = ?1")
+    boolean isExpItemIdExists(Integer id);
+    @Query("select (count(c) > 0) from Charge c where c.id = ?1")
+    boolean idIsExists(Integer id);
     @Query("select c from Charge c where c.id = ?1")
     Optional<Charge> findChargeById(Integer id);
     @Modifying

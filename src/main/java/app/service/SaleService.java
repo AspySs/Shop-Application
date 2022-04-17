@@ -1,11 +1,13 @@
-package service;
+package app.service;
 
-import entity.Sale;
+import app.entity.Sale;
+import app.entity.Warehouse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
-import repository.SaleRepository;
+import app.repository.SaleRepository;
 
-import java.math.BigDecimal;
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,8 @@ public class SaleService {
     @Autowired
     public SaleService(SaleRepository repository){this.repository = repository;}
 
+    @Transactional
+    @Modifying
     public void deleteById(Integer id){
         repository.deleteById(id);
     }
@@ -27,12 +31,20 @@ public class SaleService {
         return repository.findSaleById(id);
     }
 
+    public Optional<Warehouse> findWareById(Integer id){return repository.findWareById(id);}
+
     public Sale save(Sale sale){
         return repository.save(sale);
     }
 
     public Iterable<Sale> findAll(){
         return repository.findAll();
+    }
+
+    public boolean isExistsId(Integer id){return repository.isExistsId(id);}
+
+    public List<Sale> findByName(String name){
+        return repository.findSoldItemsByName(name);
     }
 
     public List<Sale> findByWarehouseId(Integer id){
@@ -45,10 +57,6 @@ public class SaleService {
 
     public long countInTime(LocalDate saleDateStart, LocalDate saleDateEnd){
         return repository.countSoldItemsInTime(saleDateStart, saleDateEnd);
-    }
-
-    public List<Sale> findSalesWithGreaterAmountWarehouse(BigDecimal amount){
-        return repository.findSalesWhereWarehouseAmountGreater(amount);
     }
 
 }
