@@ -1,6 +1,6 @@
-package repository;
+package app.repository;
 
-import entity.Warehouse;
+import app.entity.Warehouse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WarehouseRepository extends JpaRepository<Warehouse, Integer> {
+    @Query("select (count(w) > 0) from Warehouse w where w.name = ?1")
+    boolean isExistsName(String name);
+    @Query("select (count(w) > 0) from Warehouse w where w.id = ?1")
+    boolean isExistsId(Integer id);
     @Query("select w from Warehouse w where w.id = ?1")
     Optional<Warehouse> findWarehouseById(Integer id);
     @Modifying

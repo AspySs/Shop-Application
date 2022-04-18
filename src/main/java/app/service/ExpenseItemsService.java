@@ -1,10 +1,12 @@
-package service;
+package app.service;
 
-import entity.ExpenseItem;
+import app.entity.ExpenseItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
-import repository.ExpenseItemRepository;
+import app.repository.ExpenseItemRepository;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -15,6 +17,8 @@ public class ExpenseItemsService {
     @Autowired
     public ExpenseItemsService(ExpenseItemRepository repository){this.repository = repository;}
 
+    @Transactional
+    @Modifying
     public void deleteById(Integer id){
         repository.deleteById(id);
     }
@@ -35,6 +39,8 @@ public class ExpenseItemsService {
         return repository.isExistsById(id);
     }
 
+    @Transactional
+    @Modifying
     public void deleteByName(String name){
         repository.deleteByName(name);
     }

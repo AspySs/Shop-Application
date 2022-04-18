@@ -1,8 +1,8 @@
-package repository;
+package app.repository;
 
-import entity.Sale;
+import app.entity.Sale;
+import app.entity.Warehouse;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SaleRepository extends JpaRepository<Sale, Integer> {
+    @Query("select s from Sale s where s.warehouse.id = ?1")
+    Optional<Warehouse> findWareById(Integer id);
+    @Query("select (count(s) > 0) from Sale s where s.id = ?1")
+    boolean isExistsId(Integer id);
 
     @Query("select s from Sale s where s.id = ?1")
     Optional<Sale> findSaleById(Integer id);

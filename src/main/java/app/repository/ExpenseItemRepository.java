@@ -1,6 +1,6 @@
-package repository;
+package app.repository;
 
-import entity.ExpenseItem;
+import app.entity.ExpenseItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -1,10 +1,13 @@
-package service;
+package app.service;
 
-import entity.Charge;
+import app.entity.Charge;
+import app.entity.ExpenseItem;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
-import repository.ChargeRepository;
+import app.repository.ChargeRepository;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -18,6 +21,8 @@ public class ChargeService {
     @Autowired
     public ChargeService(ChargeRepository repository){this.repository = repository;}
 
+    @Transactional
+    @Modifying
     public void deleteById(Integer id){
         repository.deleteChargeById(id);
     }
@@ -41,6 +46,12 @@ public class ChargeService {
     public Optional<Charge> findByExpanseName(String name){
         return repository.findByExpanseItemName(name);
     }
+
+    public Optional<ExpenseItem> findExItemById(Integer id){return repository.findExItemById(id);}
+
+    public boolean idIsExists(Integer id){return repository.idIsExists(id);}
+    public boolean isExpItemNameExists(String name){return repository.isExpItemNameExists(name);}
+    public boolean isExpItemIdExists(Integer id){return repository.isExpItemIdExists(id);}
 
     public List<Charge> findByAmount(BigDecimal amountStart, BigDecimal amountEnd){
         return repository.findByAmountBetween(amountStart, amountEnd);
