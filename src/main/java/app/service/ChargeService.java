@@ -2,6 +2,9 @@ package app.service;
 
 import app.entity.Charge;
 import app.entity.ExpenseItem;
+import app.exceptions.ChargeNotFoundException;
+import app.exceptions.ExpenseItemNotFoundException;
+import app.repository.ExpenseItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
@@ -19,32 +22,57 @@ public class ChargeService {
     private final ChargeRepository repository;
 
     @Autowired
+    private ExpenseItemRepository ex_repos;
+
+    @Autowired
     public ChargeService(ChargeRepository repository){this.repository = repository;}
 
     @Transactional
     @Modifying
     public void deleteById(Integer id){
+        if(!repository.idIsExists(id)){
+            throw new ChargeNotFoundException("Charge not found by ID");
+        }
         repository.deleteChargeById(id);
     }
 
-    public Optional<Charge> findById(Integer id){
-        return repository.findChargeById(id);
+    public Charge findById(Integer id){
+        Optional<Charge> charge = repository.findChargeById(id);
+        if(charge.isPresent()){
+            return charge.get();
+        }
+        else{
+            throw new ChargeNotFoundException("Charge not found by ID");
+        }
     }
 
-    public Charge save(Charge charge){
+    public Charge add(Charge charge){
+        if((charge.getExpanseItem().getId() != null)&&(!ex_repos.isExistsById(charge.getExpanseItem().getId()))){
+            throw new ExpenseItemNotFoundException("Expense item not found by ID");
+        }
         return repository.save(charge);
     }
 
-    public Iterable<Charge> findAll(){
-        return repository.findAll();
+    public List<Charge> findAll(){return(List<Charge>) repository.findAll();}
+
+    public Charge findByExpanseId(Integer id){
+        Optional<Charge> charge = repository.findByExpanseItemsId(id);
+        if(charge.isPresent()){
+            return charge.get();
+        }
+        else{
+            throw new ChargeNotFoundException("Charge not found by ExpenseID");
+        }
     }
 
-    public Optional<Charge> findByExpanseId(Integer id){
-        return repository.findByExpanseItemsId(id);
-    }
-
-    public Optional<Charge> findByExpanseName(String name){
-        return repository.findByExpanseItemName(name);
+    public Charge findByExpanseName(String name){
+        Optional<Charge> charge = repository.findByExpanseItemName(name);
+        if(charge.isPresent()){
+            return charge.get();
+        }
+        else{
+            throw new ChargeNotFoundException("Charge not found by ExpenseName");
+        }
     }
 
     public Optional<ExpenseItem> findExItemById(Integer id){return repository.findExItemById(id);}

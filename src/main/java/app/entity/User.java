@@ -12,24 +12,23 @@ import java.util.stream.Collectors;
 
 @Entity
 public class User implements UserDetails {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String userName;
+    @Column(unique = true, nullable = false)
+    private String login;
 
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
 
-    public User(){
+    public User() {
     }
 
-    public User(String userName, String password, List<String> roles){
-        this.userName = userName;
+    public User(String login, String password, List<String> roles) {
+        this.login = login;
         this.password = password;
         this.roles = roles;
     }
@@ -44,13 +43,13 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return password;
+    public String getUsername() {
+        return login;
     }
 
     @Override
-    public String getUsername() {
-        return userName;
+    public String getPassword() {
+        return password;
     }
 
     @Override
