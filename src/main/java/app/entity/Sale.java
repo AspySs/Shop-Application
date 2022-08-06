@@ -17,18 +17,18 @@ public class Sale {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     private BigDecimal quantity;
 
-    @Column(name = "amount", precision = 18, scale = 2)
+    @Column(name = "amount", precision = 18, scale = 2, nullable = false)
     private BigDecimal amount;
 
     @Convert(disableConversion = true)
-    @Column(name = "sale_date")
+    @Column(name = "sale_date", nullable = false)
     private LocalDate saleDate;
 
     @ManyToOne
-    @JoinColumn(name = "warehouse_id")
+    @JoinColumn(name = "warehouse_id", nullable = false)
     private Warehouse warehouse;
 
 }

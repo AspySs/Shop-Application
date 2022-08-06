@@ -35,7 +35,4 @@ public interface ChargeRepository extends JpaRepository<Charge, Integer> {
 
     @Query("select c from Charge c where c.chargeDate between ?1 and ?2")
     List<Charge> findByDateBetween(LocalDate chargeDateStart, LocalDate chargeDateEnd);
-
-    @Override
-    <S extends Charge> S save(S s);
 }

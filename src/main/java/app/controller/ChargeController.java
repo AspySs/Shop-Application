@@ -82,13 +82,13 @@ public class ChargeController {
     }
 
     @GetMapping("/find/between/date")
-    public ResponseEntity<List<Charge>> findAmountBetween(@RequestParam("chargeDateStart") LocalDate cStart, @RequestParam("chargeDateStart") LocalDate cEnd){
+    public ResponseEntity<List<Charge>> findDateBetween(@RequestParam("chargeDateStart") LocalDate cStart, @RequestParam("chargeDateStart") LocalDate cEnd){
         List<Charge> chargeList = chargeService.findByDate(cStart,cEnd);
         return new ResponseEntity<>(chargeList, HttpStatus.OK);
     }
 
     @GetMapping("/find/all")
-    public ResponseEntity<List<Charge>> findAmountBetween(){
+    public ResponseEntity<List<Charge>> findAll(){
         List<Charge> chargeList = chargeService.findAll();
         return new ResponseEntity<>(chargeList, HttpStatus.OK);
     }

@@ -1,13 +1,17 @@
 package app.controller;
 import app.entity.ExpenseItem;
+import app.exceptions.ChargeNotFoundException;
+import app.exceptions.ExpenseItemNotFoundException;
 import app.service.ExpenseItemsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/expense")
@@ -20,49 +24,51 @@ public class ExpenseController {
         this.itemsService = itemsService;
     }
 
-    @GetMapping("/delete/id")
-    @ResponseBody
-    public String deleteById(@RequestParam("id") Integer id) {
-        if (itemsService.isExistsId(id)) {
+    @DeleteMapping("/delete/{id}")
+    public void deleteById(@PathVariable("id") Integer id) {
+        try {
             itemsService.deleteById(id);
-            return "ExpenseItem with id = " + id + " has been deleted";
+        }catch (ExpenseItemNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return "ExpenseItem with id = " + id + " not found";
-    }
-
-    @GetMapping("/delete/name")
-    @ResponseBody
-    public String deleteByName(@RequestParam("name") String name) {
-        if (itemsService.isExistsName(name)) {
-            itemsService.deleteByName(name);
-            return "ExpenseItem with name = " + name + " has been deleted";
-        }
-        return "ExpenseItem with name = " + name + " not found";
     }
 
     @GetMapping("/find/id")
-    public String findById(@RequestParam("id") Integer id, Model model){
-        model.addAttribute("exItem", itemsService.findById(id).orElseGet(ExpenseItem::new));
-        return "/Expense";
+    public ResponseEntity<ExpenseItem> findById(@RequestParam("id") Integer id){
+        try {
+            ExpenseItem item = itemsService.findById(id);
+            return new ResponseEntity<>(item, HttpStatus.OK);
+        }
+        catch (ExpenseItemNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/find/name")
-    public String findById(@RequestParam("name") String name, Model model){
-        model.addAttribute("exItem", itemsService.findByName(name).orElseGet(ExpenseItem::new));
-        return "/Expense";
+    public ResponseEntity<ExpenseItem> findByName(@RequestParam("name") String name){
+        try {
+            ExpenseItem item = itemsService.findByName(name);
+            return new ResponseEntity<>(item, HttpStatus.OK);
+        }
+        catch (ExpenseItemNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
-    @GetMapping("/add")
-    @ResponseBody
-    public String add(@RequestParam("id") Integer id, @RequestParam("name") String name, Model model){
-        if(!itemsService.isExistsId(id)) {
-            ExpenseItem expenseItem = new ExpenseItem();
-            expenseItem.setId(id);
-            expenseItem.setName(name);
+    @PostMapping(value = "/add", consumes = "application/json", produces = "application/json")
+    public void add(@RequestBody ExpenseItem expenseItem){
+        try{
             itemsService.save(expenseItem);
-            return "expenseItem added succesful!";
         }
-        return "expenseItem already exist!";
+        catch (IllegalArgumentException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/find/all")
+    public ResponseEntity<List<ExpenseItem>> findAll(){
+        List<ExpenseItem> itemList = itemsService.findAll();
+        return new ResponseEntity<>(itemList, HttpStatus.OK);
     }
 
 

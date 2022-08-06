@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface SaleRepository extends JpaRepository<Sale, Integer> {
+    @Query("select (count(s) > 0) from Sale s where s.warehouse.id = ?1")
+    boolean existsByWarehouse_IdEquals(Integer id);
+    @Query("select (count(s) > 0) from Sale s where s.warehouse.name = ?1")
+    boolean existsByWarehouse_NameEquals(String name);
     @Query("select s from Sale s where s.warehouse.id = ?1")
     Optional<Warehouse> findWareById(Integer id);
     @Query("select (count(s) > 0) from Sale s where s.id = ?1")

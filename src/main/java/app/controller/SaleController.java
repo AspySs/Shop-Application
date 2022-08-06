@@ -1,16 +1,20 @@
 package app.controller;
 
 
+import app.entity.Charge;
 import app.entity.Sale;
 import app.entity.Warehouse;
+import app.exceptions.ChargeNotFoundException;
+import app.exceptions.ExpenseItemNotFoundException;
+import app.exceptions.SaleNotFoundException;
 import app.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,69 +32,78 @@ public class SaleController {
     SaleController(SaleService service){this.service = service;}
 
 
-    @GetMapping("/delete/id")
-    @ResponseBody
-    public String delete(@RequestParam("id") Integer id) {
-        if (service.isExistsId(id)) {
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable("id") Integer id) {
+        try {
             service.deleteById(id);
-            return "Sale with id = " + id + " has been deleted";
+        }catch (SaleNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return "Sale with id = " + id + " not found";
     }
 
     @GetMapping("/find/id")
-    public String findById(@RequestParam("id") Integer id, Model model){
-        model.addAttribute("sale", service.findById(id).orElseGet(Sale::new));
-        return "/Sale";
+    public ResponseEntity<Sale> findById(@RequestParam("id") Integer id){
+        try {
+            Sale sale = service.findById(id);
+            return new ResponseEntity<>(sale, HttpStatus.OK);
+        }
+        catch (SaleNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/find/warehouse/id")
-    public String findByWareId(@RequestParam("id") Integer id, Model model){
-        model.addAttribute("sale", service.findByWarehouseId(id));
-        return "/Sales";
+    public ResponseEntity<List<Sale>> findByWareId(@RequestParam("id") Integer id){
+        try {
+            List<Sale> saleList = service.findByWarehouseId(id);
+            return new ResponseEntity<>(saleList, HttpStatus.OK);
+        }
+         catch (SaleNotFoundException e){
+             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+         }
     }
 
     @GetMapping("/find/name")
-    public String findByName(@RequestParam("name") String name, Model model){
-        model.addAttribute("sales", service.findByName(name));
-        return "/Sales";
+    public ResponseEntity<List<Sale>> findByName(@RequestParam("name") String name){
+        try{
+            List<Sale> saleList = service.findByName(name);
+            return new ResponseEntity<>(saleList, HttpStatus.OK);
+        }
+        catch (SaleNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/find/warehouse/name")
-    public String findByWareName(@RequestParam("name") String name, Model model){
-        model.addAttribute("sales", service.findByWarehouseName(name));
-        return "/Sales";
+    public ResponseEntity<List<Sale>> findByWareName(@RequestParam("name") String name){
+        try{
+           List<Sale> saleList = service.findByWarehouseName(name);
+           return new ResponseEntity<>(saleList, HttpStatus.OK);
+        }
+        catch (SaleNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/find/all")
-    public String findByName( Model model){
-        Iterable<Sale> iterable = service.findAll();
-        List<Sale> list = StreamSupport.stream(iterable.spliterator(), false).collect(Collectors.toList());
-        model.addAttribute("sales", list);
-        return "/Sales";
+    public ResponseEntity<List<Sale>> findAll(){
+        List<Sale> saleList = service.findAll();
+        return new ResponseEntity<>(saleList, HttpStatus.OK);
     }
 
     @GetMapping("/count/time")
     @ResponseBody
-    public String countByTime(@RequestParam("saleDateStart") LocalDate saleDateStart, @RequestParam("saleDateEnd") LocalDate saleDateEnd, Model model){
-        return "number of Sales in time: "+saleDateStart+" - "+saleDateEnd+" = "+service.countInTime(saleDateStart, saleDateEnd);
+    public Long countByTime(@RequestParam("saleDateStart") LocalDate saleDateStart, @RequestParam("saleDateEnd") LocalDate saleDateEnd, Model model){
+        return service.countInTime(saleDateStart, saleDateEnd);
     }
 
-    @GetMapping("/add")
-    @ResponseBody
-    public String add(@RequestParam("id") Integer id, @RequestParam("quantity") BigDecimal quantity, @RequestParam("amount") BigDecimal amount, @RequestParam("sale_date") LocalDate date, @RequestParam("warehouse_id") Integer wid){
-        if(!service.isExistsId(id)){
-            Sale sale = new Sale();
-            sale.setId(id);
-            sale.setQuantity(quantity);
-            sale.setAmount(amount);
-            sale.setSaleDate(date);
-            Warehouse warehouse = service.findWareById(wid).orElseGet(Warehouse::new);
-            sale.setWarehouse(warehouse);
-            service.save(sale);
-            return "Sale successful added !";
+    @PostMapping(value = "/add", consumes = "application/json", produces = "application/json")
+    public Sale add(@RequestBody Sale sale){
+        try {
+            return service.add(sale);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-        return "Sale with id="+id+" already exists";
     }
 
 

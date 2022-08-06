@@ -17,15 +17,15 @@ public class Charge {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "amount", precision = 18, scale = 2)
+    @Column(name = "amount", precision = 18, scale = 2, nullable = false)
     private BigDecimal amount;
 
     @Convert(disableConversion = true)
-    @Column(name = "charge_date")
+    @Column(name = "charge_date", nullable = false)
     private LocalDate chargeDate;
 
     @ManyToOne
-    @JoinColumn(name = "expanse_item_id")
+    @JoinColumn(name = "expanse_item_id", nullable = false)
     private ExpenseItem expanseItem;
 
 }

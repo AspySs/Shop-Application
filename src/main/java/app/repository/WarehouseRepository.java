@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface WarehouseRepository extends JpaRepository<Warehouse, Integer> {
+    @Query("select w from Warehouse w where w.name = ?1")
+    List<Warehouse> findByNameEquals(String name);
     @Query("select (count(w) > 0) from Warehouse w where w.name = ?1")
     boolean isExistsName(String name);
     @Query("select (count(w) > 0) from Warehouse w where w.id = ?1")
@@ -27,9 +29,6 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Integer> {
 
     @Query("select w from Warehouse w where w.quantity < ?1")
     List<Warehouse> findByQuantityLess(BigDecimal quantity);
-
-    @Query("select w from Warehouse w where w.name = ?1")
-    Optional<Warehouse> findByName(String name);
 
     @Override
     <S extends Warehouse> S save(S s);

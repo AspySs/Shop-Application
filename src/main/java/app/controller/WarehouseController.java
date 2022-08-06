@@ -1,17 +1,15 @@
 package app.controller;
-
-
 import app.entity.Warehouse;
+import app.exceptions.WarehouseNotFoundException;
 import app.service.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/warehouse")
@@ -22,67 +20,80 @@ public class WarehouseController {
     @Autowired
     WarehouseController(WarehouseService service){this.service = service;}
 
-    @GetMapping("/delete/id")
-    @ResponseBody
-    public String deleteById(@RequestParam("id") Integer id){
-        if(service.isExistsId(id)){
+    @DeleteMapping("/delete/{id}")
+    public void delete(@PathVariable("id") Integer id){
+        try {
             service.deleteById(id);
-            return "Warehouse with id = " + id + " has been deleted";
+        }catch (WarehouseNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        return "Warehouse with id = " + id + " not found";
-    }
-
-    @GetMapping("/delete/name")
-    @ResponseBody
-    public String deleteByName(@RequestParam("name") String name){
-        if(service.isExistsName(name)){
-            service.deleteByName(name);
-            return "Warehouse with name = " + name + " has been deleted";
+        catch (IllegalArgumentException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-        return "Warehouse with name = " + name + " not found";
     }
 
     @GetMapping("/find/id")
-    public String findById(@RequestParam("id") Integer id, Model model){
-        model.addAttribute("warehouse", service.findById(id).orElseGet(Warehouse::new));
-        return "/Warehouse";
+    public ResponseEntity<Warehouse> findById(@RequestParam("id") Integer id){
+        try{
+            Warehouse warehouse = service.findById(id);
+            return new ResponseEntity<>(warehouse, HttpStatus.OK);
+        }
+        catch (WarehouseNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/find/name")
-    public String findById(@RequestParam("name") String name, Model model){
-        model.addAttribute("warehouse", service.findByName(name).orElseGet(Warehouse::new));
-        return "/Warehouse";
+    public ResponseEntity<List<Warehouse>> findByName(@RequestParam("name") String name){
+        try{
+            List<Warehouse> warehouseList =  service.findByName(name);
+            return new ResponseEntity<>(warehouseList, HttpStatus.OK);
+        }catch (WarehouseNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
     @GetMapping("/find/quantity/greater")
-    public String findGreaterQ(@RequestParam("quantity") BigDecimal quantity, Model model){
-        model.addAttribute("warehouses", service.findByQuantityGreater(quantity));
-        return "/Warehouses";
+    public ResponseEntity<List<Warehouse>> findGreaterQ(@RequestParam("quantity") BigDecimal quantity){
+        try{
+            List<Warehouse> warehouseList =  service.findByQuantityGreater(quantity);
+            return new ResponseEntity<>(warehouseList, HttpStatus.OK);
+        }catch (WarehouseNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/find/quantity/less")
-    public String findLessQ(@RequestParam("quantity") BigDecimal quantity, Model model){
-        model.addAttribute("warehouses", service.findByQuantityLess(quantity));
-        return "/Warehouses";
+    public ResponseEntity<List<Warehouse>> findLessQ(@RequestParam("quantity") BigDecimal quantity){
+        try{
+            List<Warehouse> warehouseList =  service.findByQuantityLess(quantity);
+            return new ResponseEntity<>(warehouseList, HttpStatus.OK);
+        }catch (WarehouseNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/find/amount/between")
-    public String findBetweenA(@RequestParam("amountStart") BigDecimal aStart, @RequestParam("amountEnd") BigDecimal aEnd, Model model){
-        model.addAttribute("warehouses", service.findByAmountBetween(aStart,aEnd));
-        return "/Warehouses";
+    public ResponseEntity<List<Warehouse>> findBetweenA(@RequestParam("amountStart") BigDecimal aStart, @RequestParam("amountEnd") BigDecimal aEnd){
+       try{
+           List<Warehouse> warehouseList =  service.findByAmountBetween(aStart,aEnd);
+           return new ResponseEntity<>(warehouseList, HttpStatus.OK);
+       }catch (WarehouseNotFoundException e){
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+       }
     }
 
-    @GetMapping("/add")
-    @ResponseBody
-    public String add(@RequestParam("id") Integer id, @RequestParam("name") String name, @RequestParam("quantity") BigDecimal quantity, @RequestParam("amount") BigDecimal amount){
-        if(!service.isExistsId(id)){
-            Warehouse warehouse = new Warehouse();
-            warehouse.setId(id);
-            warehouse.setName(name);
-            warehouse.setQuantity(quantity);
-            warehouse.setAmount(amount);
-            service.save(warehouse);
-            return "Warehouse successful saved";
+    @PostMapping(value = "/add", consumes = "application/json", produces = "application/json")
+    public Warehouse add(@RequestBody Warehouse warehouse){
+        try {
+            return service.add(warehouse);
+        }catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-        return "Warehouse with id = "+id+" is already exist";
+    }
+
+    @GetMapping("/find/all")
+    public ResponseEntity<List<Warehouse>> findAll(){
+        List<Warehouse> warehouseList = service.findAll();
+        return new ResponseEntity<>(warehouseList, HttpStatus.OK);
     }
 }

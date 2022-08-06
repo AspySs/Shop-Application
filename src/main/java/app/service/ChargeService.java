@@ -47,7 +47,16 @@ public class ChargeService {
     }
 
     public Charge add(Charge charge){
-        if((charge.getExpanseItem().getId() != null)&&(!ex_repos.isExistsById(charge.getExpanseItem().getId()))){
+        if(charge.getChargeDate() == null){
+            throw new IllegalArgumentException("Charge Date can`t be null");
+        }
+        if(charge.getAmount() == null){
+            throw new IllegalArgumentException("Charge Amount can`t be null");
+        }
+        if(charge.getExpanseItem() == null){
+            throw new IllegalArgumentException("Charge Ex_Item_ID can`t be null");
+        }
+        if(!ex_repos.isExistsById(charge.getExpanseItem().getId())){
             throw new ExpenseItemNotFoundException("Expense item not found by ID");
         }
         return repository.save(charge);

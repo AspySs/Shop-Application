@@ -1,6 +1,10 @@
 package app.service;
 
+import app.entity.Charge;
 import app.entity.Warehouse;
+import app.exceptions.ChargeNotFoundException;
+import app.exceptions.WarehouseNotFoundException;
+import app.repository.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
@@ -18,44 +22,79 @@ public class WarehouseService {
     private final WarehouseRepository repository;
 
     @Autowired
-    public WarehouseService(WarehouseRepository repository){this.repository = repository;}
+    private final SaleRepository sale_repository;
+
+    @Autowired
+    public WarehouseService(WarehouseRepository repository, SaleRepository sale_repository){this.repository = repository; this.sale_repository = sale_repository;}
 
     @Transactional
     @Modifying
     public void deleteById(Integer id){
+        if(!repository.isExistsId(id)){
+            throw new WarehouseNotFoundException("Warehouse not found by ID");
+        }
+        if(sale_repository.existsByWarehouse_IdEquals(id)){
+            throw new IllegalArgumentException("всё ещё есть ссылки в таблице sales");
+        }
         repository.deleteById(id);
     }
 
-    @Transactional
-    @Modifying
-    public void deleteByName(String name){
-        repository.deleteByName(name);
-    }
 
     public boolean isExistsId(Integer id){return repository.isExistsId(id);}
     public boolean isExistsName(String name){return repository.isExistsName(name);}
 
-    public Optional<Warehouse> findById(Integer id){
-        return repository.findWarehouseById(id);
+    public Warehouse findById(Integer id){
+        Optional<Warehouse> warehouse = repository.findById(id);
+        if(warehouse.isPresent()){
+            return warehouse.get();
+        }else{
+            throw new WarehouseNotFoundException("Warehouses not found by ID");
+        }
     }
 
     public List<Warehouse> findByQuantityGreater(BigDecimal quantity){
-        return repository.findByQuantityGreater(quantity);
+        List<Warehouse> warehouseList = repository.findByQuantityGreater(quantity);
+        if(warehouseList == null){
+            throw new WarehouseNotFoundException("Warehouses not found");
+        }
+        return warehouseList;
     }
 
     public List<Warehouse> findByAmountBetween(BigDecimal amountStart, BigDecimal amountEnd){
-        return repository.findByAmountBetween(amountStart, amountEnd);
+        List<Warehouse> warehouseList = repository.findByAmountBetween(amountStart, amountEnd);
+        if(warehouseList == null){
+            throw new WarehouseNotFoundException("Warehouses not found");
+        }
+        return warehouseList;
     }
 
     public List<Warehouse> findByQuantityLess(BigDecimal quantity){
-        return repository.findByQuantityLess(quantity);
+        List<Warehouse> warehouseList = repository.findByQuantityLess(quantity);
+        if(warehouseList == null){
+            throw new WarehouseNotFoundException("Warehouses not found");
+        }
+        return warehouseList;
     }
 
-    public Optional<Warehouse> findByName(String name){
-        return repository.findByName(name);
+    public List<Warehouse> findByName(String name){
+        List<Warehouse> warehouseList = repository.findByNameEquals(name);
+        if(warehouseList == null){
+            throw new WarehouseNotFoundException("Warehouses not found");
+        }
+        return warehouseList;
     }
 
-    public Warehouse save(Warehouse warehouse){
+    public Warehouse add(Warehouse warehouse){
+        if(warehouse.getAmount() == null){
+            throw new IllegalArgumentException("Amount can`t be empty");
+        }
+        if(warehouse.getName() == null){
+            throw new IllegalArgumentException("Name can`t be empty");
+        }
+        if(warehouse.getQuantity() == null){
+            throw new IllegalArgumentException("Quantity can`t be empty");
+        }
         return repository.save(warehouse);
     }
+    public List<Warehouse> findAll(){return(List<Warehouse>) repository.findAll();}
 }

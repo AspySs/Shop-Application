@@ -12,12 +12,6 @@ public interface ExpenseItemRepository extends JpaRepository<ExpenseItem, Intege
     boolean isExistsByName(String name);
     @Query("select (count(e) > 0) from ExpenseItem e where e.id = ?1")
     boolean isExistsById(Integer id);
-    @Modifying
-    @Query("delete from ExpenseItem e where e.name = ?1")
-    int deleteByName(String name);
     @Query("select e from ExpenseItem e where e.name = ?1")
     Optional<ExpenseItem> findByName(String name);
-
-    @Override
-    <S extends ExpenseItem> S save(S s);
 }
