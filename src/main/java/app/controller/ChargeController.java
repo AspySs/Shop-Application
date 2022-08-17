@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -32,7 +33,7 @@ public class ChargeController {
         try {
             chargeService.deleteById(id);
         }catch (ChargeNotFoundException e){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
@@ -45,8 +46,18 @@ public class ChargeController {
         }
     }
 
-    @GetMapping("/find/id")
-    public ResponseEntity<Charge> findById(@RequestParam("id") Integer id){
+    @PostMapping(value = "/update/{id}", consumes = "application/json", produces = "application/json")
+    public void update(@PathVariable("id") Integer id, @RequestBody Charge charge){
+        try {
+            chargeService.update(charge.getAmount(), charge.getChargeDate(), charge.getExpanseItem().getId(), id);
+        }
+        catch (ChargeNotFoundException | ExpenseItemNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("/find_id/{id}")
+    public ResponseEntity<Charge> findById(@PathVariable("id") Integer id){
         try{
             Charge charge = chargeService.findById(id);
             return new ResponseEntity<>(charge, HttpStatus.OK);
@@ -56,20 +67,20 @@ public class ChargeController {
     }
 
     @GetMapping("/find/expanse/name")
-    public ResponseEntity<Charge> findByExpName(@RequestParam("name") String name){
+    public ResponseEntity<List<Charge>> findByExpName(@RequestParam("name") String name){
         try{
-            Charge charge = chargeService.findByExpanseName(name);
-            return new ResponseEntity<>(charge, HttpStatus.OK);
+            List<Charge> charges = chargeService.findByExpanseName(name);
+            return new ResponseEntity<>(charges, HttpStatus.OK);
         }catch (ChargeNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
     @GetMapping("/find/expanse/id")
-    public ResponseEntity<Charge> findByExpName(@RequestParam("id") Integer id){
+    public ResponseEntity<List<Charge>> findByExpName(@RequestParam("id") Integer id){
         try{
-            Charge charge = chargeService.findByExpanseId(id);
-            return new ResponseEntity<>(charge, HttpStatus.OK);
+            List<Charge> charges = chargeService.findByExpanseId(id);
+            return new ResponseEntity<>(charges, HttpStatus.OK);
         }catch (ChargeNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -82,8 +93,11 @@ public class ChargeController {
     }
 
     @GetMapping("/find/between/date")
-    public ResponseEntity<List<Charge>> findDateBetween(@RequestParam("chargeDateStart") LocalDate cStart, @RequestParam("chargeDateStart") LocalDate cEnd){
-        List<Charge> chargeList = chargeService.findByDate(cStart,cEnd);
+    public ResponseEntity<List<Charge>> findDateBetween(@RequestParam("chargeDateStart") String cStart, @RequestParam("chargeDateStop") String cEnd){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate start = LocalDate.parse(cStart, formatter);
+        LocalDate stop = LocalDate.parse(cEnd, formatter);
+        List<Charge> chargeList = chargeService.findByDate(start,stop);
         return new ResponseEntity<>(chargeList, HttpStatus.OK);
     }
 

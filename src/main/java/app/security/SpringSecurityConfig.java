@@ -15,7 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private JwtTokenProvider tokenProvider;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Bean
     @Override
@@ -36,7 +36,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth/login").permitAll()
                 .antMatchers("/auth/register").permitAll()
                 .antMatchers("/charge/find/all").permitAll()
-                .antMatchers( "/charge/find/id").permitAll()
+                .antMatchers( "/charge/find_id/{id}").permitAll()
+                .antMatchers( "/charge/find/between/date").permitAll()
+                .antMatchers( "/charge/find/between/amount").permitAll()
+                .antMatchers( "/charge/find/expanse/id").permitAll()
+                .antMatchers( "/charge/find/expanse/name").permitAll()
                 .antMatchers( "/sale/find/id").permitAll()
                 .antMatchers( "/sale/find/warehouse/name").permitAll()
                 .antMatchers( "/sale/find/all").permitAll()
@@ -44,6 +48,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers( "/sale/delete/{id}").permitAll()
                 .antMatchers( "/sale/add").permitAll()
                 .antMatchers( "/charge/delete/{id}").permitAll()
+                .antMatchers( "/charge/update/{id}").permitAll()
                 .antMatchers("/charge/add").permitAll()
                 .antMatchers( "/warehouse/add").permitAll()
                 .antMatchers( "/warehouse/delete/{id}").permitAll()
@@ -53,7 +58,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers( "/expense/find/all").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .apply(new JwtSecurityConfigurer(tokenProvider));
+                .apply(new JwtSecurityConfigurer(jwtTokenProvider));
     }
 
 

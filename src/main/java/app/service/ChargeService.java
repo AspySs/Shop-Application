@@ -7,6 +7,7 @@ import app.exceptions.ExpenseItemNotFoundException;
 import app.repository.ExpenseItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import app.repository.ChargeRepository;
 
@@ -34,6 +35,18 @@ public class ChargeService {
             throw new ChargeNotFoundException("Charge not found by ID");
         }
         repository.deleteChargeById(id);
+    }
+
+    @Transactional
+    @Modifying
+    public void update(@NonNull BigDecimal amount, @NonNull LocalDate chargeDate, @NonNull Integer id, Integer id1){
+        if(!repository.idIsExists(id1)){
+            throw new ChargeNotFoundException("Charge not found by ID");
+        }
+        if(!repository.isExpItemIdExists(id)){
+            throw new ExpenseItemNotFoundException("ExpenseItem not found");
+        }
+        repository.update(amount, chargeDate, id, id1);
     }
 
     public Charge findById(Integer id){
@@ -64,20 +77,20 @@ public class ChargeService {
 
     public List<Charge> findAll(){return(List<Charge>) repository.findAll();}
 
-    public Charge findByExpanseId(Integer id){
-        Optional<Charge> charge = repository.findByExpanseItemsId(id);
-        if(charge.isPresent()){
-            return charge.get();
+    public List<Charge> findByExpanseId(Integer id){
+        List<Charge> charges = repository.findByExpanseItemsId(id);
+        if(!charges.isEmpty()){
+            return(List<Charge>) charges;
         }
         else{
             throw new ChargeNotFoundException("Charge not found by ExpenseID");
         }
     }
 
-    public Charge findByExpanseName(String name){
-        Optional<Charge> charge = repository.findByExpanseItemName(name);
-        if(charge.isPresent()){
-            return charge.get();
+    public List<Charge> findByExpanseName(String name){
+        List<Charge> charges = repository.findByExpanseItemName(name);
+        if(!charges.isEmpty()){
+            return(List<Charge>) charges;
         }
         else{
             throw new ChargeNotFoundException("Charge not found by ExpenseName");
