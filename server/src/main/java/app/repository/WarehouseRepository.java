@@ -4,12 +4,18 @@ import app.entity.Warehouse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.NonNull;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 public interface WarehouseRepository extends JpaRepository<Warehouse, Integer> {
+    @Transactional
+    @Modifying
+    @Query("update Warehouse w set w.name = ?1, w.quantity = ?2, w.amount = ?3 where w.id = ?4")
+    int warehouseUpdate(@NonNull String name, @NonNull BigDecimal quantity, @NonNull BigDecimal amount, Integer id);
     @Query("select w from Warehouse w where w.name = ?1")
     List<Warehouse> findByNameEquals(String name);
     @Query("select (count(w) > 0) from Warehouse w where w.name = ?1")

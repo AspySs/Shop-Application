@@ -3,15 +3,18 @@ package app.service;
 import app.entity.Charge;
 import app.entity.Warehouse;
 import app.exceptions.ChargeNotFoundException;
+import app.exceptions.ExpenseItemNotFoundException;
 import app.exceptions.WarehouseNotFoundException;
 import app.repository.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import app.repository.WarehouseRepository;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -97,4 +100,16 @@ public class WarehouseService {
         return repository.save(warehouse);
     }
     public List<Warehouse> findAll(){return(List<Warehouse>) repository.findAll();}
+
+    @Transactional
+    @Modifying
+    public void update(String name, BigDecimal quantity, BigDecimal amount, Integer id){
+        if(!repository.isExistsId(id)){
+            throw new ChargeNotFoundException("Warehouse not found by ID");
+        }
+        if(name.isEmpty() || quantity == null || amount == null){
+            throw new IllegalArgumentException("Parameters can`t be empty!");
+        }
+        repository.warehouseUpdate(name, quantity, amount, id);
+    }
 }

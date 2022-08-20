@@ -1,5 +1,8 @@
 package app.controller;
+import app.entity.Charge;
 import app.entity.Warehouse;
+import app.exceptions.ChargeNotFoundException;
+import app.exceptions.ExpenseItemNotFoundException;
 import app.exceptions.WarehouseNotFoundException;
 import app.service.WarehouseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +24,10 @@ public class WarehouseController {
     WarehouseController(WarehouseService service){this.service = service;}
 
     @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable("id") Integer id){
+    public ResponseEntity<Warehouse> delete(@PathVariable("id") Integer id){
         try {
             service.deleteById(id);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (WarehouseNotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -32,8 +36,8 @@ public class WarehouseController {
         }
     }
 
-    @GetMapping("/find/id")
-    public ResponseEntity<Warehouse> findById(@RequestParam("id") Integer id){
+    @GetMapping("/find_id/{id}")
+    public ResponseEntity<Warehouse> findById(@PathVariable("id") Integer id){
         try{
             Warehouse warehouse = service.findById(id);
             return new ResponseEntity<>(warehouse, HttpStatus.OK);
@@ -83,9 +87,10 @@ public class WarehouseController {
     }
 
     @PostMapping(value = "/add", consumes = "application/json", produces = "application/json")
-    public Warehouse add(@RequestBody Warehouse warehouse){
+    public ResponseEntity<Warehouse> add(@RequestBody Warehouse warehouse){
         try {
-            return service.add(warehouse);
+            service.add(warehouse);
+            return new ResponseEntity<>(HttpStatus.OK);
         }catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
@@ -95,5 +100,19 @@ public class WarehouseController {
     public ResponseEntity<List<Warehouse>> findAll(){
         List<Warehouse> warehouseList = service.findAll();
         return new ResponseEntity<>(warehouseList, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/update/{id}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Warehouse> update(@PathVariable("id") Integer id, @RequestBody Warehouse warehouse){
+        try {
+            service.update(warehouse.getName(), warehouse.getQuantity(), warehouse.getAmount(), id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        catch (ChargeNotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+        catch (IllegalArgumentException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 }

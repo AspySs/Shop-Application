@@ -82,7 +82,7 @@ public class ExpenseItemController {
     }
 
     @PostMapping("/expenseitems/edit/{id}")
-    public String editDiagnose(@PathVariable("id") Integer id, @RequestParam String name) {
+    public String editItem(@PathVariable("id") Integer id, @RequestParam String name) {
         String url = "http://localhost:8080/expense/update";
         String json = "{\n" +
                 "  \"id\":"+id+",\n" +

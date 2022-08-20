@@ -15,6 +15,7 @@ import static main.utils.Utils.*;
 
 @Controller
 public class LoginController {
+    @Autowired
     private User user;
 
     @GetMapping("/login")
@@ -45,8 +46,4 @@ public class LoginController {
         return "redirect:/account";
     }
 
-    @Autowired
-    public void setUser(User user) {
-        this.user = user;
-    }
 }
