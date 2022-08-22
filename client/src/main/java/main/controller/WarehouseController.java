@@ -2,6 +2,7 @@ package main.controller;
 
 
 import main.entity.Charge;
+import main.entity.Sale;
 import main.entity.User;
 import main.entity.Warehouse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,14 @@ public class WarehouseController {
     @GetMapping("/warehouses/find_id/{id}")
     public String getWarehousePage(@PathVariable("id") Integer id, Model model) {
         model.addAttribute("title", "Warehouse №" + id);
-
         String url = "http://localhost:8080/warehouse/find_id/" + id;
-
         Warehouse house = getRequest(url, Warehouse.class);
         model.addAttribute("house", house);
+
+        String url2 = "http://localhost:8080/sale/find/warehouse/id?id=" + id;
+        List<Sale> sales = getRequest(url2, List.class);
+        model.addAttribute("sales", sales);
+
 
         return "warehouses/warehouse";
     }

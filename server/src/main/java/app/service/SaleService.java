@@ -3,12 +3,16 @@ package app.service;
 import app.entity.Sale;
 import app.entity.Warehouse;
 import app.exceptions.SaleNotFoundException;
+import app.exceptions.WarehouseNotFoundException;
+import app.repository.WarehouseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import app.repository.SaleRepository;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +24,13 @@ public class SaleService {
     private final SaleRepository repository;
 
     @Autowired
-    public SaleService(SaleRepository repository){this.repository = repository;}
+    private final WarehouseRepository w_repository;
+
+    @Autowired
+    public SaleService(SaleRepository repository, WarehouseRepository w_repository){
+        this.repository = repository;
+        this.w_repository = w_repository;
+    }
 
     @Transactional
     @Modifying
@@ -56,6 +66,9 @@ public class SaleService {
         if(sale.getWarehouse() == null){
             throw new IllegalArgumentException("Sale without warehouse");
         }
+        if(!w_repository.isExistsId(sale.getWarehouse().getId())){
+            throw new WarehouseNotFoundException("Warehouse with this ID not found");
+        }
         return repository.save(sale);
     }
 
@@ -65,9 +78,6 @@ public class SaleService {
 
     public boolean isExistsId(Integer id){return repository.isExistsId(id);}
 
-    public List<Sale> findByName(String name){
-        return repository.findSoldItemsByName(name);
-    }
 
     public List<Sale> findByWarehouseId(Integer id){
         if(!repository.existsByWarehouse_IdEquals(id)){
@@ -95,4 +105,40 @@ public class SaleService {
         return repository.countSoldItemsInTime(saleDateStart, saleDateEnd);
     }
 
+    public List<Sale> findBySaleDate(LocalDate saleDate){
+        List<Sale> sales = repository.findBySaleDateEquals(saleDate);
+        if(sales.isEmpty()){
+            throw new SaleNotFoundException("Sales not found by Date");
+        }
+        return sales;
+    }
+
+    public List<Sale> findByAmountBetween(BigDecimal amountStart, BigDecimal amountEnd){
+        List<Sale> saleList = repository.findByAmountIsBetween(amountStart, amountEnd);
+        if(saleList.isEmpty()){
+            throw new SaleNotFoundException("Sales not found by Amount");
+        }
+        return saleList;
+    }
+
+    public List<Sale> findByQuantityBetween(BigDecimal quantityStart, BigDecimal quantityEnd){
+        List<Sale> saleList = repository.findByQuantityIsBetween(quantityStart, quantityEnd);
+        if(saleList.isEmpty()){
+            throw new SaleNotFoundException("Sales not found by Quantity");
+        }
+        return saleList;
+    }
+
+    public void update(BigDecimal quantity, BigDecimal amount, LocalDate saleDate, Integer id, Integer id1){
+        if(quantity == null || amount == null || saleDate == null || id == null){
+            throw new IllegalArgumentException("parameters can`t be empty");
+        }
+        if(!w_repository.isExistsId(id)){
+            throw new WarehouseNotFoundException("Warehouse with this ID not found");
+        }
+        if(!repository.isExistsId(id1)){
+            throw new SaleNotFoundException("Sale with this ID not found");
+        }
+        repository.updateQuantityAndAmountAndSaleDateAndWarehouseIdByIdEquals(quantity,amount,saleDate,id,id1);
+    }
 }
