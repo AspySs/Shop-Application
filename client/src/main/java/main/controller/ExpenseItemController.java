@@ -5,13 +5,11 @@ import main.entity.ExpenseItem;
 import main.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
@@ -23,6 +21,17 @@ import static main.utils.Utils.postRequest;
 public class ExpenseItemController {
     @Autowired
     private User user;
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public String handleException(HttpClientErrorException e, Model model) {
+        if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
+            model.addAttribute("message", "Not enough rights for this (need to be admin)");
+        }
+        if (HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())) {
+            model.addAttribute("message", e.getMessage());
+        }
+        return "signin/authorizationEx";
+    }
 
     @GetMapping("/expenseitems")
     public String getChargesPage(Model model) {
@@ -52,7 +61,7 @@ public class ExpenseItemController {
     public String addItem(@RequestParam("name") String name) {
         String url = "http://localhost:8080/expense/add";
         String json = "{\n" +
-                "  \"name\":\""+name+"\"\n" +
+                "  \"name\":\"" + name + "\"\n" +
                 "}";
 
         postRequest(url, user.getToken(), json, HttpMethod.POST, MediaType.APPLICATION_JSON);
@@ -86,8 +95,8 @@ public class ExpenseItemController {
     public String editItem(@PathVariable("id") Integer id, @RequestParam String name) {
         String url = "http://localhost:8080/expense/update";
         String json = "{\n" +
-                "  \"id\":"+id+",\n" +
-                "  \"name\":\""+name+"\"\n" +
+                "  \"id\":" + id + ",\n" +
+                "  \"name\":\"" + name + "\"\n" +
                 "}";
         postRequest(url, user.getToken(), json, HttpMethod.POST, MediaType.APPLICATION_JSON);
 
@@ -105,7 +114,7 @@ public class ExpenseItemController {
             String url2 = "http://localhost:8080/charge/find/expanse/id?id=" + id;
             List<Charge> charges = getRequest(url2, List.class);
             model.addAttribute("charges", charges);
-        }catch (HttpClientErrorException.NotFound e){
+        } catch (HttpClientErrorException.NotFound e) {
             return "items/item";
         }
         return "items/item";

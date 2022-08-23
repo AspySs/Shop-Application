@@ -13,7 +13,7 @@ public class ExpenseItem {
     public String toString() {
         return "Charge{" +
                 "id=" + id +
-                ", name=" +"\""+ name +"\""+
+                ", name=" + "\"" + name + "\"" +
                 '}';
     }
 }

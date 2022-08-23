@@ -16,17 +16,23 @@ public interface WarehouseRepository extends JpaRepository<Warehouse, Integer> {
     @Modifying
     @Query("update Warehouse w set w.name = ?1, w.quantity = ?2, w.amount = ?3 where w.id = ?4")
     int warehouseUpdate(@NonNull String name, @NonNull BigDecimal quantity, @NonNull BigDecimal amount, Integer id);
+
     @Query("select w from Warehouse w where w.name = ?1")
     List<Warehouse> findByNameEquals(String name);
+
     @Query("select (count(w) > 0) from Warehouse w where w.name = ?1")
     boolean isExistsName(String name);
+
     @Query("select (count(w) > 0) from Warehouse w where w.id = ?1")
     boolean isExistsId(Integer id);
+
     @Query("select w from Warehouse w where w.id = ?1")
     Optional<Warehouse> findWarehouseById(Integer id);
+
     @Modifying
     @Query("delete from Warehouse w where w.name = ?1")
     void deleteByName(String name);
+
     @Query("select w from Warehouse w where w.quantity > ?1")
     List<Warehouse> findByQuantityGreater(BigDecimal quantity);
 

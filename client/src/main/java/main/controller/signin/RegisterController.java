@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import static main.utils.Utils.*;
+import static main.utils.Utils.authRequest;
 
 @Controller
 public class RegisterController {
@@ -27,7 +27,7 @@ public class RegisterController {
                 "\"roles\":" + "[\"ROLE_USER\"]\n" +
                 "}";
 
-        postRequest(url, null, json, HttpMethod.POST, MediaType.APPLICATION_JSON);
+        authRequest(url, json, HttpMethod.POST, MediaType.APPLICATION_JSON);
         return "redirect:/login";
     }
 }

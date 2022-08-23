@@ -23,9 +23,9 @@ public class Utils {
     }
 
     public static ResponseEntity<String> postRequest(String url, String token, String requestBody, HttpMethod method, MediaType mediaType) {
-/*        if(token == null){
+        if (token == null) {
             throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Method allows authorized users");
-        }*/
+        }
         HttpHeaders headers = new HttpHeaders();
         RestTemplate template = new RestTemplate();
         if (mediaType != null) {
@@ -37,5 +37,13 @@ public class Utils {
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
         return template.exchange(url, method, entity, String.class);
         //return template.postForEntity(url, httpEntity, String.class);
+    }
+
+    public static ResponseEntity<String> authRequest(String url, String requestBody, HttpMethod method, MediaType mediaType) {
+        HttpHeaders headers = new HttpHeaders();
+        RestTemplate template = new RestTemplate();
+        headers.setContentType(mediaType);
+        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+        return template.exchange(url, method, entity, String.class);
     }
 }

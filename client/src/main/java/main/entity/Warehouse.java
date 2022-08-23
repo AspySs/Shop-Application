@@ -17,7 +17,7 @@ public class Warehouse {
     public String toString() {
         return "Charge{" +
                 "id=" + id +
-                ", name=" +"\""+ amount + "\""+
+                ", name=" + "\"" + amount + "\"" +
                 ", quantity=" + quantity +
                 ", amount=" + amount +
                 '}';

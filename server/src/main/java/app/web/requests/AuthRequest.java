@@ -1,4 +1,5 @@
 package app.web.requests;
+
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;

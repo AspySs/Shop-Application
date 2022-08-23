@@ -8,12 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,6 +21,17 @@ import static main.utils.Utils.postRequest;
 public class ChargeController {
     @Autowired
     private User user;
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public String handleException(HttpClientErrorException e, Model model) {
+        if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
+            model.addAttribute("message", "Not enough rights for this (need to be admin)");
+        }
+        if (HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())) {
+            model.addAttribute("message", e.getMessage());
+        }
+        return "signin/authorizationEx";
+    }
 
     @GetMapping("/charges")
     public String getChargesPage(Model model) {
@@ -49,21 +56,10 @@ public class ChargeController {
     }
 
     @PostMapping("/charges/delete/{id}")
-    public String deleteCharge(@PathVariable("id") Integer id) {
-/*        try {*/
-            String url = "http://localhost:8080/charge/delete/" + id;
-            postRequest(url, user.getToken(), null, HttpMethod.DELETE, null);
-            return "redirect:/charges";
-/*        }catch (HttpClientErrorException e){
-            if(HttpStatus.FORBIDDEN.equals(e.getStatusCode())){
-                model.addAttribute("message", "Not enough rights for this (need to be admin)");
-            }
-            if(HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())){
-                model.addAttribute("message", e.getMessage());
-            }
-            return "signin/login";
-        }*/
-
+    public String deleteCharge(@PathVariable("id") Integer id, Model model) {
+        String url = "http://localhost:8080/charge/delete/" + id;
+        postRequest(url, user.getToken(), null, HttpMethod.DELETE, null);
+        return "redirect:/charges";
     }
 
     @GetMapping("/charges/edit/{id}")
@@ -78,25 +74,25 @@ public class ChargeController {
 
     @PostMapping("/charges/edit/{id}")
     public String editCharge(@PathVariable("id") long id, @RequestParam("newAmount") BigDecimal newAmount,
-                               @RequestParam("newChargeDate") String newChargeDate, @RequestParam("newExId") Integer newExId) {
+                             @RequestParam("newChargeDate") String newChargeDate, @RequestParam("newExId") Integer newExId) {
         String url = "http://localhost:8080/charge/update/" + id;
         String json = "{\n" +
-                "  \"amount\":"+newAmount+",\n" +
-                "  \"chargeDate\":\""+newChargeDate+"\",\n" +
-                "  \"expanseItem\":{\"id\":"+newExId+"}\n" +
+                "  \"amount\":" + newAmount + ",\n" +
+                "  \"chargeDate\":\"" + newChargeDate + "\",\n" +
+                "  \"expanseItem\":{\"id\":" + newExId + "}\n" +
                 "}";
         postRequest(url, user.getToken(), json, HttpMethod.POST, MediaType.APPLICATION_JSON);
-        return "redirect:/charges/find_id/"+id;
+        return "redirect:/charges/find_id/" + id;
     }
 
     @PostMapping("/charges/add")
     public String addCharge(@RequestParam("Amount") BigDecimal newAmount,
-                              @RequestParam("ChargeDate") String newChargeDate, @RequestParam("ExId") Integer newExId) {
+                            @RequestParam("ChargeDate") String newChargeDate, @RequestParam("ExId") Integer newExId) {
         String url = "http://localhost:8080/charge/add";
         String json = "{\n" +
-                "  \"amount\":"+newAmount+",\n" +
-                "  \"chargeDate\":\""+newChargeDate+"\",\n" +
-                "  \"expanseItem\":{\"id\":"+newExId+"}\n" +
+                "  \"amount\":" + newAmount + ",\n" +
+                "  \"chargeDate\":\"" + newChargeDate + "\",\n" +
+                "  \"expanseItem\":{\"id\":" + newExId + "}\n" +
                 "}";
 
 
@@ -154,7 +150,7 @@ public class ChargeController {
 
     @PostMapping("/charges/find/btw/date")
     public String findChargeDate(@RequestParam("chargeDateStart") String chargeDateStart, @RequestParam("chargeDateStop") String chargeDateStop, Model model) {
-        String url = "http://localhost:8080/charge/find/between/date?chargeDateStart=" + chargeDateStart + "&chargeDateStop="+chargeDateStop;
+        String url = "http://localhost:8080/charge/find/between/date?chargeDateStart=" + chargeDateStart + "&chargeDateStop=" + chargeDateStop;
         model.addAttribute("title", "Find by Date");
         List<Charge> charges = getRequest(url, List.class);
         model.addAttribute("charges", charges);
@@ -163,7 +159,7 @@ public class ChargeController {
 
     @PostMapping("/charges/find/btw/amount")
     public String findChargeAmount(@RequestParam("amountStart") BigDecimal amountStart, @RequestParam("amountStop") BigDecimal amountStop, Model model) {
-        String url = "http://localhost:8080/charge/find/between/amount?amountStart=" + amountStart + "&amountEnd="+amountStop;
+        String url = "http://localhost:8080/charge/find/between/amount?amountStart=" + amountStart + "&amountEnd=" + amountStop;
         model.addAttribute("title", "Find by Amount");
         List<Charge> charges = getRequest(url, List.class);
         model.addAttribute("charges", charges);

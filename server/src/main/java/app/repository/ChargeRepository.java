@@ -16,27 +16,35 @@ import java.util.Optional;
 public interface ChargeRepository extends JpaRepository<Charge, Integer> {
     @Query("select c from Charge c where c.expanseItem.id = ?1")
     List<Charge> findByExpanseItemsId(Integer id);
+
     @Query("select c from Charge c where c.expanseItem.name = ?1")
     List<Charge> findByExpanseItemName(String name);
+
     @Transactional
     @Modifying
     @Query("delete from Charge c where c.id = ?1")
     void deleteChargeById(Integer id);
+
     @Transactional
     @Modifying
     @Query("update Charge c set c.amount = ?1, c.chargeDate = ?2, c.expanseItem.id = ?3 where c.id = ?4")
     void update(@NonNull BigDecimal amount, @NonNull LocalDate chargeDate, @NonNull Integer id, Integer id1);
+
     @Query("select c from Charge c where c.expanseItem.id = ?1")
     Optional<ExpenseItem> findExItemById(Integer id);
+
     @Query("select (count(c) > 0) from Charge c where c.expanseItem.name = ?1")
     boolean isExpItemNameExists(String name);
+
     @Query("select (count(c) > 0) from Charge c where c.expanseItem.id = ?1")
     boolean isExpItemIdExists(Integer id);
+
     @Query("select (count(c) > 0) from Charge c where c.id = ?1")
     boolean idIsExists(Integer id);
+
     @Query("select c from Charge c where c.id = ?1")
     Optional<Charge> findChargeById(Integer id);
-           //2
+    //2
 
     @Query("select c from Charge c where c.amount between ?1 and ?2")
     List<Charge> findByAmountBetween(BigDecimal amountStart, BigDecimal amountEnd);

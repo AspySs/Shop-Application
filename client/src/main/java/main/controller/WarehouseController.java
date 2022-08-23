@@ -1,19 +1,16 @@
 package main.controller;
 
 
-import main.entity.Charge;
 import main.entity.Sale;
 import main.entity.User;
 import main.entity.Warehouse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
@@ -26,6 +23,17 @@ import static main.utils.Utils.postRequest;
 public class WarehouseController {
     @Autowired
     private User user;
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public String handleException(HttpClientErrorException e, Model model) {
+        if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
+            model.addAttribute("message", "Not enough rights for this (need to be admin)");
+        }
+        if (HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())) {
+            model.addAttribute("message", e.getMessage());
+        }
+        return "signin/authorizationEx";
+    }
 
     @GetMapping("/warehouses")
     public String getWarehousesPage(Model model) {
@@ -49,8 +57,7 @@ public class WarehouseController {
             String url2 = "http://localhost:8080/sale/find/warehouse/id?id=" + id;
             List<Sale> sales = getRequest(url2, List.class);
             model.addAttribute("sales", sales);
-        }
-        catch (HttpClientErrorException.NotFound e){
+        } catch (HttpClientErrorException.NotFound e) {
             return "warehouses/warehouse";
         }
 
@@ -79,6 +86,7 @@ public class WarehouseController {
         model.addAttribute("title", "Find Warehouse");
         return "warehouses/findName";
     }
+
     @GetMapping("/warehouses/add")
     public String getAddPage(Model model) {
         model.addAttribute("title", "Add Warehouse");
@@ -98,22 +106,22 @@ public class WarehouseController {
     public String editWarehouse(@PathVariable("id") long id, @RequestParam("name") String name, @RequestParam("amount") BigDecimal amount, @RequestParam("quantity") BigDecimal quantity) {
         String url = "http://localhost:8080/warehouse/update/" + id;
         String json = "{\n" +
-                "  \"id\": "+id+",\n" +
-                "  \"name\": \""+name+"\",\n" +
-                "  \"quantity\": "+quantity+",\n" +
-                "  \"amount\": "+amount+"\n" +
+                "  \"id\": " + id + ",\n" +
+                "  \"name\": \"" + name + "\",\n" +
+                "  \"quantity\": " + quantity + ",\n" +
+                "  \"amount\": " + amount + "\n" +
                 "}";
         postRequest(url, user.getToken(), json, HttpMethod.POST, MediaType.APPLICATION_JSON);
-        return "redirect:/warehouses/find_id/"+id;
+        return "redirect:/warehouses/find_id/" + id;
     }
 
     @PostMapping("/warehouses/add")
-    public String addWarehouse( @RequestParam("name") String name, @RequestParam("amount") BigDecimal amount, @RequestParam("quantity") BigDecimal quantity) {
+    public String addWarehouse(@RequestParam("name") String name, @RequestParam("amount") BigDecimal amount, @RequestParam("quantity") BigDecimal quantity) {
         String url = "http://localhost:8080/warehouse/add";
         String json = "{\n" +
-                "  \"name\": \""+name+"\",\n" +
-                "  \"quantity\": "+quantity+",\n" +
-                "  \"amount\": "+amount+"\n" +
+                "  \"name\": \"" + name + "\",\n" +
+                "  \"quantity\": " + quantity + ",\n" +
+                "  \"amount\": " + amount + "\n" +
                 "}";
         postRequest(url, user.getToken(), json, HttpMethod.POST, MediaType.APPLICATION_JSON);
         return "redirect:/warehouses";
@@ -124,11 +132,13 @@ public class WarehouseController {
         model.addAttribute("title", "Find by Amount");
         return "warehouses/findAmount";
     }
+
     @GetMapping("/warehouses/find/less/quantity")
     public String findPageQuantityLess(Model model) {
         model.addAttribute("title", "less");
         return "warehouses/findQuantity";
     }
+
     @GetMapping("/warehouses/find/greater/quantity")
     public String findPageQuantityGreat(Model model) {
         model.addAttribute("title", "greater");
@@ -137,7 +147,7 @@ public class WarehouseController {
 
     @PostMapping("/warehouses/find/quantity")
     public String findWarehouseAmount(@RequestParam("type") String type, @RequestParam("quantity") BigDecimal quantity, Model model) {
-        String url = "http://localhost:8080/warehouse/find/quantity/" +type +"?quantity="+ quantity;
+        String url = "http://localhost:8080/warehouse/find/quantity/" + type + "?quantity=" + quantity;
         model.addAttribute("title", "Find by Quantity " + type);
         List<Warehouse> houses = getRequest(url, List.class);
         model.addAttribute("houses", houses);
@@ -146,7 +156,7 @@ public class WarehouseController {
 
     @PostMapping("/warehouses/find/btw/amount")
     public String findWarehouseAmount(@RequestParam("amountStart") BigDecimal amountStart, @RequestParam("amountStop") BigDecimal amountStop, Model model) {
-        String url = "http://localhost:8080/warehouse/find/amount/between?amountStart=" + amountStart + "&amountEnd="+amountStop;
+        String url = "http://localhost:8080/warehouse/find/amount/between?amountStart=" + amountStart + "&amountEnd=" + amountStop;
         model.addAttribute("title", "Find by Amount");
         List<Warehouse> houses = getRequest(url, List.class);
         model.addAttribute("houses", houses);

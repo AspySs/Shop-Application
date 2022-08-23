@@ -30,23 +30,23 @@
         <li>quantity: <h3 th:text="${sale.quantity}"></h3></li>
         <hr>
         <div class="alert alert-info mt-2">
-        <h3>Warehouse:</h3>
-        <hr>
-        <li>id: <h3 th:text="${house.id}"></h3></li>
-        <li>name: <h3 th:text="${house.name}"></h3></li>
-        <li>amount: <h3 th:text="${house.amount}"></h3></li>
-        <li>quantity: <h3 th:text="${house.quantity}"></h3></li>
-        <div class="row">
-            <div class="col-md-auto">
-                <form th:action="'/warehouses/delete/' + ${house.id}" method="post">
-                    <button type="submit" class="btn btn-warning">Delete</button>
-                </form>
+            <h3>Warehouse:</h3>
+            <hr>
+            <li>id: <h3 th:text="${house.id}"></h3></li>
+            <li>name: <h3 th:text="${house.name}"></h3></li>
+            <li>amount: <h3 th:text="${house.amount}"></h3></li>
+            <li>quantity: <h3 th:text="${house.quantity}"></h3></li>
+            <div class="row">
+                <div class="col-md-auto">
+                    <form th:action="'/warehouses/delete/' + ${house.id}" method="post">
+                        <button type="submit" class="btn btn-warning">Delete</button>
+                    </form>
+                </div>
+                <div class="col-md-auto">
+                    <a th:href="'/warehouses/edit/' + ${house.id}" th:text="'Edit'" class="btn btn-warning"/>
+                </div>
             </div>
-            <div class="col-md-auto">
-                <a th:href="'/warehouses/edit/' + ${house.id}" th:text="'Edit'" class="btn btn-warning"/>
-            </div>
-        </div>
-        <hr>
+            <hr>
         </div>
     </ul>
 

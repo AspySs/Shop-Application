@@ -4,14 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import main.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import static main.utils.Utils.*;
+import static main.utils.Utils.authRequest;
 
 @Controller
 public class LoginController {
@@ -31,7 +33,7 @@ public class LoginController {
                 "\"login\":" + "\"" + login + "\"" + ",\n" +
                 "\"password\":" + "\"" + password + "\"" + "\n" +
                 "}";
-        ResponseEntity<String> responseEntity = postRequest(url, null, json,
+        ResponseEntity<String> responseEntity = authRequest(url, json,
                 HttpMethod.POST, MediaType.APPLICATION_JSON);
 
         try {
