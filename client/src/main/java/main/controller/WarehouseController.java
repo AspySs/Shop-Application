@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -44,10 +45,14 @@ public class WarehouseController {
         Warehouse house = getRequest(url, Warehouse.class);
         model.addAttribute("house", house);
 
-        String url2 = "http://localhost:8080/sale/find/warehouse/id?id=" + id;
-        List<Sale> sales = getRequest(url2, List.class);
-        model.addAttribute("sales", sales);
-
+        try {
+            String url2 = "http://localhost:8080/sale/find/warehouse/id?id=" + id;
+            List<Sale> sales = getRequest(url2, List.class);
+            model.addAttribute("sales", sales);
+        }
+        catch (HttpClientErrorException.NotFound e){
+            return "warehouses/warehouse";
+        }
 
         return "warehouses/warehouse";
     }

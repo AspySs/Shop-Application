@@ -101,9 +101,6 @@ public class SaleService {
         return saleList;
     }
 
-    public long countInTime(LocalDate saleDateStart, LocalDate saleDateEnd){
-        return repository.countSoldItemsInTime(saleDateStart, saleDateEnd);
-    }
 
     public List<Sale> findBySaleDate(LocalDate saleDate){
         List<Sale> sales = repository.findBySaleDateEquals(saleDate);

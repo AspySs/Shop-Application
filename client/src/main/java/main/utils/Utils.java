@@ -3,6 +3,7 @@ package main.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class Utils {
@@ -22,6 +23,9 @@ public class Utils {
     }
 
     public static ResponseEntity<String> postRequest(String url, String token, String requestBody, HttpMethod method, MediaType mediaType) {
+/*        if(token == null){
+            throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Method allows authorized users");
+        }*/
         HttpHeaders headers = new HttpHeaders();
         RestTemplate template = new RestTemplate();
         if (mediaType != null) {

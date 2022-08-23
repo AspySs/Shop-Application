@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 
@@ -100,9 +101,13 @@ public class ExpenseItemController {
         model.addAttribute("title", "Find by ID");
         ExpenseItem item = getRequest(url, ExpenseItem.class);
         model.addAttribute("item", item);
-        String url2 = "http://localhost:8080/charge/find/expanse/id?id=" + id;
-        List<Charge> charges = getRequest(url2, List.class);
-        model.addAttribute("charges", charges);
+        try {
+            String url2 = "http://localhost:8080/charge/find/expanse/id?id=" + id;
+            List<Charge> charges = getRequest(url2, List.class);
+            model.addAttribute("charges", charges);
+        }catch (HttpClientErrorException.NotFound e){
+            return "items/item";
+        }
         return "items/item";
     }
 

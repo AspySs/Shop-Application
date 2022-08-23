@@ -41,9 +41,7 @@ public interface SaleRepository extends JpaRepository<Sale, Integer> {
 
     @Query("select s from Sale s where s.warehouse.id = ?1")        //2
     List<Sale> findSalesByWarehouseId(Integer id);
-
-    @Query("select count(s) from Sale s where s.saleDate between ?1 and ?2")
-    long countSoldItemsInTime(LocalDate saleDateStart, LocalDate saleDateEnd);
+    
 
     @Override
     <S extends Sale> S save(S s);

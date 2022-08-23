@@ -12,16 +12,6 @@
 
 <div class="container mt-3">
     <h1 th:text="${title}"/>
-
-    <ul>
-        <hr>
-        <li>id: <h3 th:text="${sale.id}"></h3></li>
-        <li>amount: <h3 th:text="${sale.amount}"></h3></li>
-        <li>saleDate: <h3 th:text="${sale.saleDate}"></h3></li>
-        <li>quantity: <h3 th:text="${sale.quantity}"></h3></li>
-        <li>warehouse_id: <h3 th:text="${sale.warehouse.id}"></h3></li>
-
-    </ul>
     <div class="row">
         <div class="col-md-auto">
             <form th:action="'/sales/delete/' + ${sale.id}" method="post">
@@ -32,6 +22,34 @@
             <a th:href="'/sales/edit/' + ${sale.id}" th:text="'Edit'" class="btn btn-warning"/>
         </div>
     </div>
+    <ul>
+        <hr>
+        <li>id: <h3 th:text="${sale.id}"></h3></li>
+        <li>amount: <h3 th:text="${sale.amount}"></h3></li>
+        <li>saleDate: <h3 th:text="${sale.saleDate}"></h3></li>
+        <li>quantity: <h3 th:text="${sale.quantity}"></h3></li>
+        <hr>
+        <div class="alert alert-info mt-2">
+        <h3>Warehouse:</h3>
+        <hr>
+        <li>id: <h3 th:text="${house.id}"></h3></li>
+        <li>name: <h3 th:text="${house.name}"></h3></li>
+        <li>amount: <h3 th:text="${house.amount}"></h3></li>
+        <li>quantity: <h3 th:text="${house.quantity}"></h3></li>
+        <div class="row">
+            <div class="col-md-auto">
+                <form th:action="'/warehouses/delete/' + ${house.id}" method="post">
+                    <button type="submit" class="btn btn-warning">Delete</button>
+                </form>
+            </div>
+            <div class="col-md-auto">
+                <a th:href="'/warehouses/edit/' + ${house.id}" th:text="'Edit'" class="btn btn-warning"/>
+            </div>
+        </div>
+        <hr>
+        </div>
+    </ul>
+
 </div>
 </body>
 </html>

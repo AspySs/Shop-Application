@@ -134,11 +134,6 @@ public class SaleController {
         return new ResponseEntity<>(saleList, HttpStatus.OK);
     }
 
-    @GetMapping("/count/time")
-    @ResponseBody
-    public ResponseEntity<Long> countByTime(@RequestParam("saleDateStart") LocalDate saleDateStart, @RequestParam("saleDateEnd") LocalDate saleDateEnd, Model model){
-        return new ResponseEntity<>(service.countInTime(saleDateStart, saleDateEnd), HttpStatus.OK);
-    }
 
     @PostMapping(value = "/add", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Sale> add(@RequestBody Sale sale){

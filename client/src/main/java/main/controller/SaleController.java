@@ -1,9 +1,8 @@
 package main.controller;
 
-
-import main.entity.Charge;
 import main.entity.Sale;
 import main.entity.User;
+import main.entity.Warehouse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -41,9 +40,12 @@ public class SaleController {
         model.addAttribute("title", "Sale №" + id);
 
         String url = "http://localhost:8080/sale/find_id/" + id;
-
         Sale sale = getRequest(url, Sale.class);
         model.addAttribute("sale", sale);
+
+        String url2 = "http://localhost:8080/warehouse/find_id/" + sale.getWarehouse().getId();
+        Warehouse house = getRequest(url2, Warehouse.class);
+        model.addAttribute("house", house);
 
         return "sales/sale";
     }
@@ -100,5 +102,80 @@ public class SaleController {
                 "}";
         postRequest(url, user.getToken(), json, HttpMethod.POST, MediaType.APPLICATION_JSON);
         return "redirect:/sales";
+    }
+
+    @GetMapping("/sales/find/btw/amount")
+    public String findPageAmount(Model model) {
+        model.addAttribute("title", "Find by Amount");
+        return "sales/findAmount";
+    }
+
+    @GetMapping("/sales/find/btw/quantity")
+    public String findPageQuantity(Model model) {
+        model.addAttribute("title", "Find by Quantity");
+        return "sales/findQuantity";
+    }
+
+    @GetMapping("/sales/find/date")
+    public String findPageDate(Model model) {
+        model.addAttribute("title", "Find by Date");
+        return "sales/findDate";
+    }
+
+    @GetMapping("/sales/find/w_id")
+    public String findPageWareId(Model model) {
+        model.addAttribute("title", "Find by WarehouseID");
+        return "sales/findWID";
+    }
+
+    @GetMapping("/sales/find/name")
+    public String findPageName(Model model) {
+        model.addAttribute("title", "Find by Name");
+        return "sales/findName";
+    }
+
+    @PostMapping("/sales/find/name")
+    public String findByWarehouseName(@RequestParam("name") String name, Model model) {
+        String url = "http://localhost:8080/sale/find/warehouse/name?name="+name;
+        model.addAttribute("title", "Find by Name");
+        List<Sale> sales = getRequest(url, List.class);
+        model.addAttribute("sales", sales);
+        return "sales/foundByWare";
+    }
+
+    @PostMapping("/sales/find/w_id")
+    public String findByWarehouseId(@RequestParam("id") Integer id, Model model) {
+        String url = "http://localhost:8080/sale/find/warehouse/id?id="+id;
+        model.addAttribute("title", "Find by WarehouseID");
+        List<Sale> sales = getRequest(url, List.class);
+        model.addAttribute("sales", sales);
+        return "sales/foundByWare";
+    }
+
+    @PostMapping("/sales/find/date")
+    public String findByDate(@RequestParam("date") String date, Model model) {
+        String url = "http://localhost:8080/sale/find/date?start="+date;
+        model.addAttribute("title", "Find by Date");
+        List<Sale> sales = getRequest(url, List.class);
+        model.addAttribute("sales", sales);
+        return "sales/found";
+    }
+
+    @PostMapping("/sales/find/btw/quantity")
+    public String findByQuantity(@RequestParam("start") BigDecimal start, @RequestParam("stop") BigDecimal stop, Model model) {
+        String url = "http://localhost:8080/sale/find/quantity?qStart="+start+"&qStop="+stop;
+        model.addAttribute("title", "Find by Quantity");
+        List<Sale> sales = getRequest(url, List.class);
+        model.addAttribute("sales", sales);
+        return "sales/found";
+    }
+
+    @PostMapping("/sales/find/btw/amount")
+    public String findByAmount(@RequestParam("start") BigDecimal start, @RequestParam("stop") BigDecimal stop, Model model) {
+        String url = "http://localhost:8080/sale/find/amount?aStart="+start+"&aStop="+stop;
+        model.addAttribute("title", "Find by Amount");
+        List<Sale> sales = getRequest(url, List.class);
+        model.addAttribute("sales", sales);
+        return "sales/found";
     }
 }

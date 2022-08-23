@@ -4,6 +4,7 @@ import main.entity.Charge;
 import main.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,7 +33,6 @@ public class ChargeController {
         String url = "http://localhost:8080/charge/find/all";
         List<Charge> charges = getRequest(url, List.class);
         model.addAttribute("charges", charges);
-
         return "charges/charges";
     }
 
@@ -48,9 +50,20 @@ public class ChargeController {
 
     @PostMapping("/charges/delete/{id}")
     public String deleteCharge(@PathVariable("id") Integer id) {
-        String url = "http://localhost:8080/charge/delete/" + id;
-        postRequest(url, user.getToken(), null, HttpMethod.DELETE, null);
-        return "redirect:/charges";
+/*        try {*/
+            String url = "http://localhost:8080/charge/delete/" + id;
+            postRequest(url, user.getToken(), null, HttpMethod.DELETE, null);
+            return "redirect:/charges";
+/*        }catch (HttpClientErrorException e){
+            if(HttpStatus.FORBIDDEN.equals(e.getStatusCode())){
+                model.addAttribute("message", "Not enough rights for this (need to be admin)");
+            }
+            if(HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())){
+                model.addAttribute("message", e.getMessage());
+            }
+            return "signin/login";
+        }*/
+
     }
 
     @GetMapping("/charges/edit/{id}")
