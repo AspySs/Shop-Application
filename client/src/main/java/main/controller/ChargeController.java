@@ -22,7 +22,7 @@ public class ChargeController {
     @Autowired
     private User user;
 
-    @ExceptionHandler(HttpClientErrorException.class)
+    @ExceptionHandler({HttpClientErrorException.Unauthorized.class, HttpClientErrorException.Forbidden.class})
     public String handleException(HttpClientErrorException e, Model model) {
         if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
             model.addAttribute("message", "Not enough rights for this (need to be admin)");
@@ -30,6 +30,7 @@ public class ChargeController {
         if (HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())) {
             model.addAttribute("message", e.getMessage());
         }
+        model.addAttribute("token", user.getToken());
         return "signin/authorizationEx";
     }
 
@@ -40,6 +41,7 @@ public class ChargeController {
         String url = "http://localhost:8080/charge/find/all";
         List<Charge> charges = getRequest(url, List.class);
         model.addAttribute("charges", charges);
+        model.addAttribute("token", user.getToken());
         return "charges/charges";
     }
 
@@ -51,12 +53,13 @@ public class ChargeController {
 
         Charge charge = getRequest(url, Charge.class);
         model.addAttribute("charge", charge);
+        model.addAttribute("token", user.getToken());
 
         return "charges/charge";
     }
 
     @PostMapping("/charges/delete/{id}")
-    public String deleteCharge(@PathVariable("id") Integer id, Model model) {
+    public String deleteCharge(@PathVariable("id") Integer id) {
         String url = "http://localhost:8080/charge/delete/" + id;
         postRequest(url, user.getToken(), null, HttpMethod.DELETE, null);
         return "redirect:/charges";
@@ -69,6 +72,7 @@ public class ChargeController {
         String url = "http://localhost:8080/charge/find_id/" + id;
         Charge charge = getRequest(url, Charge.class);
         model.addAttribute("charge", charge);
+        model.addAttribute("token", user.getToken());
         return "charges/editCharge";
     }
 
@@ -103,30 +107,35 @@ public class ChargeController {
     @GetMapping("/charges/add")
     public String addChargePage(Model model) {
         model.addAttribute("title", "Add charge");
+        model.addAttribute("token", user.getToken());
         return "charges/addCharge";
     }
 
     @GetMapping("/charges/find/btw/amount")
     public String findChargePageAmount(Model model) {
         model.addAttribute("title", "Find by Amount");
+        model.addAttribute("token", user.getToken());
         return "charges/findAmount";
     }
 
     @GetMapping("/charges/find/btw/date")
     public String findChargePageDate(Model model) {
         model.addAttribute("title", "Find by Date");
+        model.addAttribute("token", user.getToken());
         return "charges/findDate";
     }
 
     @GetMapping("/charges/find/ex/name")
     public String findChargePageName(Model model) {
         model.addAttribute("title", "Find by Expense name");
+        model.addAttribute("token", user.getToken());
         return "charges/findName";
     }
 
     @GetMapping("/charges/find/ex/id")
     public String findChargePageID(Model model) {
         model.addAttribute("title", "Find by Expense ID");
+        model.addAttribute("token", user.getToken());
         return "charges/findID";
     }
 
@@ -136,6 +145,7 @@ public class ChargeController {
         model.addAttribute("title", "Find by ExID");
         List<Charge> charges = getRequest(url, List.class);
         model.addAttribute("charges", charges);
+        model.addAttribute("token", user.getToken());
         return "charges/foundEx";
     }
 
@@ -145,6 +155,7 @@ public class ChargeController {
         model.addAttribute("title", "Find by ExName");
         List<Charge> charges = getRequest(url, List.class);
         model.addAttribute("charges", charges);
+        model.addAttribute("token", user.getToken());
         return "charges/foundEx";
     }
 
@@ -154,6 +165,7 @@ public class ChargeController {
         model.addAttribute("title", "Find by Date");
         List<Charge> charges = getRequest(url, List.class);
         model.addAttribute("charges", charges);
+        model.addAttribute("token", user.getToken());
         return "charges/found";
     }
 
@@ -163,6 +175,7 @@ public class ChargeController {
         model.addAttribute("title", "Find by Amount");
         List<Charge> charges = getRequest(url, List.class);
         model.addAttribute("charges", charges);
+        model.addAttribute("token", user.getToken());
         return "charges/found";
     }
 }

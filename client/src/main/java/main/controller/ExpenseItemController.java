@@ -22,7 +22,7 @@ public class ExpenseItemController {
     @Autowired
     private User user;
 
-    @ExceptionHandler(HttpClientErrorException.class)
+    @ExceptionHandler({HttpClientErrorException.Unauthorized.class, HttpClientErrorException.Forbidden.class})
     public String handleException(HttpClientErrorException e, Model model) {
         if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
             model.addAttribute("message", "Not enough rights for this (need to be admin)");
@@ -30,6 +30,7 @@ public class ExpenseItemController {
         if (HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())) {
             model.addAttribute("message", e.getMessage());
         }
+        model.addAttribute("token", user.getToken());
         return "signin/authorizationEx";
     }
 
@@ -40,7 +41,7 @@ public class ExpenseItemController {
         String url = "http://localhost:8080/expense/find/all";
         List<ExpenseItem> items = getRequest(url, List.class);
         model.addAttribute("items", items);
-
+        model.addAttribute("token", user.getToken());
         return "items/items";
     }
 
@@ -54,6 +55,7 @@ public class ExpenseItemController {
     @GetMapping("/expenseitems/add")
     public String addItemPage(Model model) {
         model.addAttribute("title", "Add ExpenseItem");
+        model.addAttribute("token", user.getToken());
         return "items/addItem";
     }
 
@@ -71,12 +73,14 @@ public class ExpenseItemController {
     @GetMapping("/expenseitems/find/id")
     public String findItemPageID(Model model) {
         model.addAttribute("title", "Find by ID");
+        model.addAttribute("token", user.getToken());
         return "items/findID";
     }
 
     @GetMapping("/expenseitems/find/name")
     public String findItemPageName(Model model) {
         model.addAttribute("title", "Find by Name");
+        model.addAttribute("token", user.getToken());
         return "items/findName";
     }
 
@@ -87,6 +91,7 @@ public class ExpenseItemController {
         String url = "http://localhost:8080/expense/find_id/" + id;
         ExpenseItem item = getRequest(url, ExpenseItem.class);
         model.addAttribute("item", item);
+        model.addAttribute("token", user.getToken());
 
         return "items/editItem";
     }
@@ -110,6 +115,7 @@ public class ExpenseItemController {
         model.addAttribute("title", "Find by ID");
         ExpenseItem item = getRequest(url, ExpenseItem.class);
         model.addAttribute("item", item);
+        model.addAttribute("token", user.getToken());
         try {
             String url2 = "http://localhost:8080/charge/find/expanse/id?id=" + id;
             List<Charge> charges = getRequest(url2, List.class);
@@ -126,6 +132,7 @@ public class ExpenseItemController {
         model.addAttribute("title", "Find by Name");
         List<ExpenseItem> items = getRequest(url, List.class);
         model.addAttribute("items", items);
+        model.addAttribute("token", user.getToken());
         return "items/items";
     }
 }

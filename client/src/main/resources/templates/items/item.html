@@ -14,12 +14,12 @@
     <h1 th:text="${title}"/>
     <br/>
     <div class="row">
-        <div class="col-md-auto">
+        <div th:if="${token}" class="col-md-auto">
             <form th:action="'/expenseitems/delete/' + ${item.id}" method="post">
                 <button type="submit" class="btn btn-warning">Delete</button>
             </form>
         </div>
-        <div class="col-md-auto">
+        <div th:if="${token}" class="col-md-auto">
             <a th:href="'/expenseitems/edit/' + ${item.id}" th:text="'Edit'" class="btn btn-warning"/>
         </div>
     </div>
@@ -39,7 +39,7 @@
                 <div class="col-md-auto">
                     <a th:href="'/charges/find_id/' + ${el.id}" th:text="'Details'" class="btn btn-warning"/>
                 </div>
-                <div class="col-md-auto">
+                <div th:if="${token}" class="col-md-auto">
                     <form th:action="'/charges/delete/' + ${el.id}" method="post">
                         <button type="submit" class="btn btn-warning">Delete</button>
                     </form>

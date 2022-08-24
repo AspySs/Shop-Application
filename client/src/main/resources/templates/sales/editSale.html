@@ -15,16 +15,16 @@
     <form th:action="'/sales/edit/'+${sale.id}" method="post">
         Amount:
         <input type="number" step=0.01 name="amount" th:placeholder="${sale.amount}" th:value="${sale.amount}"
-               class="form-control"><br>
+               class="form-control" required><br>
         Quantity:
         <input type="number" step=0.01 name="quantity" th:placeholder="${sale.quantity}" th:value="${sale.quantity}"
-               class="form-control"><br>
+               class="form-control" required><br>
         Sale_Date:
         <input type="date" step=0.01 name="date" th:placeholder="${sale.saleDate}" th:value="${sale.saleDate}"
-               class="form-control"><br>
+               class="form-control" required><br>
         Warehouse_ID:
         <input type="number" step=1 name="wId" th:placeholder="${sale.warehouse.id}" th:value="${sale.warehouse.id}"
-               class="form-control"><br>
+               class="form-control" required><br>
         <button type="submit" class="btn btn-success">Edit Sale</button>
     </form>
 </div>

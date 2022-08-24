@@ -24,7 +24,7 @@ public class WarehouseController {
     @Autowired
     private User user;
 
-    @ExceptionHandler(HttpClientErrorException.class)
+    @ExceptionHandler({HttpClientErrorException.Unauthorized.class, HttpClientErrorException.Forbidden.class})
     public String handleException(HttpClientErrorException e, Model model) {
         if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
             model.addAttribute("message", "Not enough rights for this (need to be admin)");
@@ -32,6 +32,7 @@ public class WarehouseController {
         if (HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())) {
             model.addAttribute("message", e.getMessage());
         }
+        model.addAttribute("token", user.getToken());
         return "signin/authorizationEx";
     }
 
@@ -43,6 +44,7 @@ public class WarehouseController {
         List<Warehouse> houses = getRequest(url, List.class);
         model.addAttribute("houses", houses);
 
+        model.addAttribute("token", user.getToken());
         return "warehouses/warehouses";
     }
 
@@ -52,7 +54,7 @@ public class WarehouseController {
         String url = "http://localhost:8080/warehouse/find_id/" + id;
         Warehouse house = getRequest(url, Warehouse.class);
         model.addAttribute("house", house);
-
+        model.addAttribute("token", user.getToken());
         try {
             String url2 = "http://localhost:8080/sale/find/warehouse/id?id=" + id;
             List<Sale> sales = getRequest(url2, List.class);
@@ -78,18 +80,21 @@ public class WarehouseController {
         String url = "http://localhost:8080/warehouse/find_id/" + id;
         Warehouse house = getRequest(url, Warehouse.class);
         model.addAttribute("house", house);
+        model.addAttribute("token", user.getToken());
         return "warehouses/editWarehouse";
     }
 
     @GetMapping("/warehouses/find/name")
     public String getFindNamePage(Model model) {
         model.addAttribute("title", "Find Warehouse");
+        model.addAttribute("token", user.getToken());
         return "warehouses/findName";
     }
 
     @GetMapping("/warehouses/add")
     public String getAddPage(Model model) {
         model.addAttribute("title", "Add Warehouse");
+        model.addAttribute("token", user.getToken());
         return "warehouses/addWarehouse";
     }
 
@@ -99,6 +104,7 @@ public class WarehouseController {
         String url = "http://localhost:8080/warehouse/find/name?name=" + name;
         List<Warehouse> houses = getRequest(url, List.class);
         model.addAttribute("houses", houses);
+        model.addAttribute("token", user.getToken());
         return "warehouses/warehouses";
     }
 
@@ -130,18 +136,21 @@ public class WarehouseController {
     @GetMapping("/warehouses/find/btw/amount")
     public String findPageAmount(Model model) {
         model.addAttribute("title", "Find by Amount");
+        model.addAttribute("token", user.getToken());
         return "warehouses/findAmount";
     }
 
     @GetMapping("/warehouses/find/less/quantity")
     public String findPageQuantityLess(Model model) {
         model.addAttribute("title", "less");
+        model.addAttribute("token", user.getToken());
         return "warehouses/findQuantity";
     }
 
     @GetMapping("/warehouses/find/greater/quantity")
     public String findPageQuantityGreat(Model model) {
         model.addAttribute("title", "greater");
+        model.addAttribute("token", user.getToken());
         return "warehouses/findQuantity";
     }
 
@@ -151,6 +160,7 @@ public class WarehouseController {
         model.addAttribute("title", "Find by Quantity " + type);
         List<Warehouse> houses = getRequest(url, List.class);
         model.addAttribute("houses", houses);
+        model.addAttribute("token", user.getToken());
         return "warehouses/found";
     }
 
@@ -160,6 +170,7 @@ public class WarehouseController {
         model.addAttribute("title", "Find by Amount");
         List<Warehouse> houses = getRequest(url, List.class);
         model.addAttribute("houses", houses);
+        model.addAttribute("token", user.getToken());
         return "warehouses/found";
     }
 }

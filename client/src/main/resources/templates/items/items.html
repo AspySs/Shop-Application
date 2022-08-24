@@ -12,7 +12,7 @@
 
 <div class="container mt-3">
     <h1 th:text="${title}"/>
-    <a th:href="'/expenseitems/add'" class="btn btn-warning" th:text="'Add Item'"/>
+    <a th:if="${token}" th:href="'/expenseitems/add'" class="btn btn-warning" th:text="'Add Item'"/>
     <a th:href="'/expenseitems/find/id'" class="btn btn-warning" th:text="'Find by ID'"/>
     <a th:href="'/expenseitems/find/name'" class="btn btn-warning" th:text="'Find by Name'"/>
     <div th:each="el : ${items}" class="alert alert-info mt-2">
@@ -25,7 +25,7 @@
                     <button type="submit" class="btn btn-warning">Details</button>
                 </form>
             </div>
-            <div class="col-md-auto">
+            <div th:if="${token}" class="col-md-auto">
                 <form th:action="'/expenseitems/delete/' + ${el.id}" method="post">
                     <button type="submit" class="btn btn-warning">Delete</button>
                 </form>

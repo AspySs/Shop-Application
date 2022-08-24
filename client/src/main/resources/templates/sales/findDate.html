@@ -14,7 +14,7 @@
     <h1 th:text="${title}"/>
     <form th:action="'/sales/find/date'" method="POST">
         Date:
-        <input type="date" name="date" class="form-control"><br>
+        <input type="date" name="date" class="form-control" required><br>
         <button type="submit" class="btn btn-success">Find</button>
     </form>
 </div>

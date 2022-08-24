@@ -5,6 +5,7 @@ import app.repository.UserRepository;
 import app.security.jwt.JwtTokenProvider;
 import app.web.requests.AuthRequest;
 import app.web.requests.RegisterRequest;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,15 +34,26 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Map<Object, Object>> signIn(@RequestBody AuthRequest request) {
         String login = request.getLogin();
-        String token = jwtTokenProvider.createToken(login, userRepository.findUserByLogin(login)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found by login"))
-                .getRoles());
-
-        Map<Object, Object> model = new HashMap<>();
-        model.put("login", login);
-        model.put("token", token);
-
-        return ResponseEntity.ok(model);
+        String pass = request.getPassword();
+        if(userRepository.findUserByLogin(login).isPresent()){
+            User usr = userRepository.findUserByLogin(login).get();
+            if(!usr.getPassword().equals(pass)){
+                Map<Object, Object> model = new HashMap<>();
+                model.put("login", "Invalid password or login");
+                model.put("token", null);
+                return ResponseEntity.ok(model);
+            }
+            String token = jwtTokenProvider.createToken(login, usr.getRoles());
+            Map<Object, Object> model = new HashMap<>();
+            model.put("login", login);
+            model.put("token", token);
+            return ResponseEntity.ok(model);
+        }else{
+            Map<Object, Object> model = new HashMap<>();
+            model.put("login", "Invalid password or login");
+            model.put("token", null);
+            return ResponseEntity.ok(model);
+        }
     }
 
     @PostMapping("/register")

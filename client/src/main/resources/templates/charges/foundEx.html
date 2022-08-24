@@ -12,7 +12,7 @@
 
 <div class="container mt-3">
     <h1 th:text="${title}"/>
-    <a th:href="'/charges/add'" class="btn btn-warning" th:text="'Add Charge'"/>
+    <a th:if="${token}" th:href="'/charges/add'" class="btn btn-warning" th:text="'Add Charge'"/>
     <a th:href="'/charges/find/btw/amount'" class="btn btn-warning" th:text="'Find by Amount'"/>
     <a th:href="'/charges/find/btw/date'" class="btn btn-warning" th:text="'Find by Date'"/>
     <a th:href="'/charges/find/ex/id'" class="btn btn-warning" th:text="'Find by ExID'"/>
@@ -26,7 +26,7 @@
             <div class="col-md-auto">
                 <a th:href="'/charges/find_id/' + ${el.id}" th:text="'Details'" class="btn btn-warning"/>
             </div>
-            <div class="col-md-auto">
+            <div th:if="${token}" class="col-md-auto">
                 <form th:action="'/charges/delete/' + ${el.id}" method="post">
                     <button type="submit" class="btn btn-warning">Delete</button>
                 </form>

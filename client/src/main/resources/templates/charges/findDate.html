@@ -14,7 +14,7 @@
     <h1 th:text="${title}"/>
     <form th:action="'/charges/find/btw/date'" method="POST">
         ChargeDate_START:
-        <input type="date" name="chargeDateStart" class="form-control"><br>
+        <input type="date" name="chargeDateStart" class="form-control" required><br>
         ChargeDate_STOP:
         <input type="date" name="chargeDateStop" class="form-control"><br>
         <button type="submit" class="btn btn-success">Find</button>

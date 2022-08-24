@@ -13,13 +13,13 @@
 <div class="container mt-3">
     <h1 th:text="${title}"/>
     <div class="row">
-        <div class="col-md-auto">
+        <div th:if="${token}" class="col-md-auto">
             <form th:action="'/sales/delete/' + ${sale.id}" method="post">
                 <button type="submit" class="btn btn-warning">Delete</button>
             </form>
         </div>
         <div class="col-md-auto">
-            <a th:href="'/sales/edit/' + ${sale.id}" th:text="'Edit'" class="btn btn-warning"/>
+            <a th:if="${token}" th:href="'/sales/edit/' + ${sale.id}" th:text="'Edit'" class="btn btn-warning"/>
         </div>
     </div>
     <ul>
@@ -37,13 +37,16 @@
             <li>amount: <h3 th:text="${house.amount}"></h3></li>
             <li>quantity: <h3 th:text="${house.quantity}"></h3></li>
             <div class="row">
-                <div class="col-md-auto">
-                    <form th:action="'/warehouses/delete/' + ${house.id}" method="post">
+                <div th:if="${token}" class="col-md-auto">
+                    <form  th:action="'/warehouses/delete/' + ${house.id}" method="post">
                         <button type="submit" class="btn btn-warning">Delete</button>
                     </form>
                 </div>
-                <div class="col-md-auto">
+                <div th:if="${token}" class="col-md-auto">
                     <a th:href="'/warehouses/edit/' + ${house.id}" th:text="'Edit'" class="btn btn-warning"/>
+                </div>
+                <div class="col-md-auto">
+                    <a th:href="'/warehouses/find_id/' + ${house.id}" th:text="'Details'" class="btn btn-warning"/>
                 </div>
             </div>
             <hr>

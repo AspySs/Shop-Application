@@ -12,7 +12,7 @@
 
 <div class="container mt-3">
     <h1 th:text="${title}"/>
-    <a th:href="'/sales/add'" class="btn btn-warning" th:text="'Add Sale'"/>
+    <a th:if="${token}" th:href="'/sales/add'" class="btn btn-warning" th:text="'Add Sale'"/>
     <a th:href="'/sales/find/btw/amount'" class="btn btn-warning" th:text="'Find by Amount'"/>
     <a th:href="'/sales/find/btw/quantity'" class="btn btn-warning" th:text="'Find by Quantity'"/>
     <a th:href="'/sales/find/date'" class="btn btn-warning" th:text="'Find by Date'"/>
@@ -20,11 +20,12 @@
     <a th:href="'/sales/find/name'" class="btn btn-warning" th:text="'Find by Warehouse Name'"/>
     <div th:each="el : ${sales}" class="alert alert-info mt-2">
         <h3 th:text="${el.id}"/>
+        <h6 th:text="${el.saleDate}"/>
         <div class="row">
             <div class="col-md-auto">
                 <a th:href="'/sales/find_id/' + ${el.id}" th:text="'Details'" class="btn btn-warning"/>
             </div>
-            <div class="col-md-auto">
+            <div class="col-md-auto" th:if="${token}">
                 <form th:action="'/sales/delete/' + ${el.id}" method="post">
                     <button type="submit" class="btn btn-warning">Delete</button>
                 </form>

@@ -14,7 +14,7 @@
     <h1 th:text="${title}"/>
     <form th:action="'/charges/find/ex/name'" method="POST">
         ExpanseItem Name:
-        <input type="text" name="exName" class="form-control"><br>
+        <input type="text" name="exName" class="form-control" required><br>
         <button type="submit" class="btn btn-success">Find</button>
     </form>
 </div>

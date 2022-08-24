@@ -24,6 +24,14 @@ public class MainController {
         return "account";
     }
 
+    @GetMapping("/logout")
+    public String logOut(Model model) {
+        user.setLogin(null);
+        user.setToken(null);
+        model.addAttribute("title", "Login");
+        return "signin/login";
+    }
+
     @Autowired
     public void setUser(User user) {
         this.user = user;

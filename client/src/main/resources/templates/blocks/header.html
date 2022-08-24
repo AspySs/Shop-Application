@@ -10,9 +10,18 @@
                 <li class="nav-item"><a href="/warehouses" class="nav-link link-dark px-2">Warehouses</a></li>
             </ul>
             <ul class="nav">
+                <div th:if="not ${token}">
                 <li class="nav-item"><a href="/login" class="nav-link link-dark px-2">Login</a></li>
+                </div>
+                <div th:if="not ${token}">
                 <li class="nav-item"><a href="/register" class="nav-link link-dark px-2">Register</a></li>
+                </div>
+                <div th:if="${token}">
                 <li class="nav-item"><a href="/account" class="nav-link link-dark px-2">Account</a></li>
+                </div>
+                <div th:if="${token}">
+                    <li class="nav-item"><a href="/logout" class="nav-link link-dark px-2">Logout</a></li>
+                </div>
             </ul>
         </div>
     </nav>

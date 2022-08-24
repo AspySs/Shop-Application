@@ -31,7 +31,7 @@
                 <div class="col-md-auto">
                     <a th:href="'/sales/find_id/' + ${el.id}" th:text="'Details'" class="btn btn-warning"/>
                 </div>
-                <div class="col-md-auto">
+                <div th:if="${token}" class="col-md-auto">
                     <form th:action="'/sales/delete/' + ${el.id}" method="post">
                         <button type="submit" class="btn btn-warning">Delete</button>
                     </form>
@@ -41,12 +41,12 @@
     </ul>
 
     <div class="row">
-        <div class="col-md-auto">
+        <div th:if="${token}" class="col-md-auto">
             <form th:action="'/warehouses/delete/' + ${house.id}" method="post">
                 <button type="submit" class="btn btn-warning">Delete</button>
             </form>
         </div>
-        <div class="col-md-auto">
+        <div th:if="${token}" class="col-md-auto">
             <a th:href="'/warehouses/edit/' + ${house.id}" th:text="'Edit'" class="btn btn-warning"/>
         </div>
     </div>

@@ -23,7 +23,7 @@ public class SaleController {
     @Autowired
     private User user;
 
-    @ExceptionHandler(HttpClientErrorException.class)
+    @ExceptionHandler({HttpClientErrorException.Unauthorized.class, HttpClientErrorException.Forbidden.class})
     public String handleException(HttpClientErrorException e, Model model) {
         if (HttpStatus.FORBIDDEN.equals(e.getStatusCode())) {
             model.addAttribute("message", "Not enough rights for this (need to be admin)");
@@ -31,6 +31,7 @@ public class SaleController {
         if (HttpStatus.UNAUTHORIZED.equals(e.getStatusCode())) {
             model.addAttribute("message", e.getMessage());
         }
+        model.addAttribute("token", user.getToken());
         return "signin/authorizationEx";
     }
 
@@ -41,6 +42,7 @@ public class SaleController {
         String url = "http://localhost:8080/sale/find/all";
         List<Sale> sales = getRequest(url, List.class);
         model.addAttribute("sales", sales);
+        model.addAttribute("token", user.getToken());
 
         return "sales/sales";
     }
@@ -57,6 +59,7 @@ public class SaleController {
         Warehouse house = getRequest(url2, Warehouse.class);
         model.addAttribute("house", house);
 
+        model.addAttribute("token", user.getToken());
         return "sales/sale";
     }
 
@@ -70,6 +73,7 @@ public class SaleController {
     @GetMapping("/sales/add")
     public String getAddPage(Model model) {
         model.addAttribute("title", "Add Sale");
+        model.addAttribute("token", user.getToken());
         return "sales/addSale";
     }
 
@@ -80,6 +84,7 @@ public class SaleController {
 
         Sale sale = getRequest(url, Sale.class);
         model.addAttribute("sale", sale);
+        model.addAttribute("token", user.getToken());
         return "sales/editSale";
     }
 
@@ -117,30 +122,35 @@ public class SaleController {
     @GetMapping("/sales/find/btw/amount")
     public String findPageAmount(Model model) {
         model.addAttribute("title", "Find by Amount");
+        model.addAttribute("token", user.getToken());
         return "sales/findAmount";
     }
 
     @GetMapping("/sales/find/btw/quantity")
     public String findPageQuantity(Model model) {
         model.addAttribute("title", "Find by Quantity");
+        model.addAttribute("token", user.getToken());
         return "sales/findQuantity";
     }
 
     @GetMapping("/sales/find/date")
     public String findPageDate(Model model) {
         model.addAttribute("title", "Find by Date");
+        model.addAttribute("token", user.getToken());
         return "sales/findDate";
     }
 
     @GetMapping("/sales/find/w_id")
     public String findPageWareId(Model model) {
         model.addAttribute("title", "Find by WarehouseID");
+        model.addAttribute("token", user.getToken());
         return "sales/findWID";
     }
 
     @GetMapping("/sales/find/name")
     public String findPageName(Model model) {
         model.addAttribute("title", "Find by Name");
+        model.addAttribute("token", user.getToken());
         return "sales/findName";
     }
 
@@ -150,6 +160,7 @@ public class SaleController {
         model.addAttribute("title", "Find by Name");
         List<Sale> sales = getRequest(url, List.class);
         model.addAttribute("sales", sales);
+        model.addAttribute("token", user.getToken());
         return "sales/foundByWare";
     }
 
@@ -159,6 +170,7 @@ public class SaleController {
         model.addAttribute("title", "Find by WarehouseID");
         List<Sale> sales = getRequest(url, List.class);
         model.addAttribute("sales", sales);
+        model.addAttribute("token", user.getToken());
         return "sales/foundByWare";
     }
 
@@ -168,6 +180,7 @@ public class SaleController {
         model.addAttribute("title", "Find by Date");
         List<Sale> sales = getRequest(url, List.class);
         model.addAttribute("sales", sales);
+        model.addAttribute("token", user.getToken());
         return "sales/found";
     }
 
@@ -177,6 +190,7 @@ public class SaleController {
         model.addAttribute("title", "Find by Quantity");
         List<Sale> sales = getRequest(url, List.class);
         model.addAttribute("sales", sales);
+        model.addAttribute("token", user.getToken());
         return "sales/found";
     }
 
@@ -186,6 +200,7 @@ public class SaleController {
         model.addAttribute("title", "Find by Amount");
         List<Sale> sales = getRequest(url, List.class);
         model.addAttribute("sales", sales);
+        model.addAttribute("token", user.getToken());
         return "sales/found";
     }
 }

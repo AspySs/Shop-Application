@@ -14,7 +14,7 @@
     <h1 th:text="${title}"/>
     <form th:action="'/sales/find/w_id'" method="POST">
         Warehouse ID:
-        <input type="number" name="id" class="form-control"><br>
+        <input type="number" name="id" class="form-control" required><br>
         <button type="submit" class="btn btn-success">Find</button>
     </form>
 </div>

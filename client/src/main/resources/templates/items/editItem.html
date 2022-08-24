@@ -14,7 +14,7 @@
     <h1 th:text="${title}"/>
     <form th:action="'/expenseitems/edit/' + ${item.id}" method="POST">
         Name:
-        <input type="text" th:value="${item.name}" name="name" th:placeholder="${item.name}" class="form-control"><br>
+        <input type="text" th:value="${item.name}" name="name" th:placeholder="${item.name}" class="form-control" required><br>
         <button type="submit" class="btn btn-success">Edit</button>
     </form>
 </div>
