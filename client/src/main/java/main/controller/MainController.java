@@ -13,6 +13,7 @@ public class MainController {
     @GetMapping("/")
     public String getHomePage(Model model) {
         model.addAttribute("title", "Homepage");
+        model.addAttribute("token", user.getToken());
         return "index";
     }
 
@@ -29,6 +30,7 @@ public class MainController {
         user.setLogin(null);
         user.setToken(null);
         model.addAttribute("title", "Login");
+        model.addAttribute("token", user.getToken());
         return "signin/login";
     }
 
