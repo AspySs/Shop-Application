@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title th:text="${title}"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+<div th:insert="blocks/header :: header"></div>
+
+<div class="container mt-3">
+    <h1 th:text="${title}"/>
+
+    <ul>
+        <hr>
+        <li>id: <h3 th:text="${house.id}"></h3></li>
+        <li>name: <h3 th:text="${house.name}"></h3></li>
+        <li>amount: <h3 th:text="${house.amount}"></h3></li>
+        <li>quantity: <h3 th:text="${house.quantity}"></h3></li>
+        <h2>Sales:</h2>
+        <div th:each="el : ${sales}" class="alert alert-info mt-2">
+            <hr>
+            <li>id: <h3 th:text="${el.id}"></h3></li>
+            <li>amount: <h3 th:text="${el.amount}"></h3></li>
+            <li>saleDate: <h3 th:text="${el.saleDate}"></h3></li>
+            <li>quantity: <h3 th:text="${el.quantity}"></h3></li>
+            <hr>
+            <div class="row">
+                <div class="col-md-auto">
+                    <a th:href="'/sales/find_id/' + ${el.id}" th:text="'Details'" class="btn btn-warning"/>
+                </div>
+                <div th:if="${token}" class="col-md-auto">
+                    <form th:action="'/sales/delete/' + ${el.id}" method="post">
+                        <button type="submit" class="btn btn-warning">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </ul>
+
+    <div class="row">
+        <div th:if="${token}" class="col-md-auto">
+            <form th:action="'/warehouses/delete/' + ${house.id}" method="post">
+                <button type="submit" class="btn btn-warning">Delete</button>
+            </form>
+        </div>
+        <div th:if="${token}" class="col-md-auto">
+            <a th:href="'/warehouses/edit/' + ${house.id}" th:text="'Edit'" class="btn btn-warning"/>
+        </div>
+    </div>
+</div>
+</body>
+</html>
